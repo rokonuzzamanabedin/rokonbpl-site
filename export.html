@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy"
+      content="
+      default-src 'self';
+      img-src 'self' https:;
+      style-src 'self' https: 'unsafe-inline';
+      script-src 'self' https: 'unsafe-inline';
+      connect-src 'self' https://rokonbpl.atwebpages.com http://rokonbpl.atwebpages.com;
+      font-src 'self' https:;
+      ">
+
+    <title>Daily Statement</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+    /* Reset some default browser styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* Set a background color and font for the body */
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Style the container */
+    .container {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 10px;
+        text-align: center;
+        width: 90%;
+        max-width: 400px;
+        z-index: 9;
+        margin-top: 35%;
+        position: relative;
+    }
+
+    /* Style the heading */
+    h1 {
+        margin-bottom: 2px;
+        color: #333;
+        font-size: 1.5rem;
+    }
+
+    /* Style the date and time */
+    #dateTime {
+        margin-bottom: 10px;
+        margin-top: 10px;
+        color: #666;
+        font-size: 1rem;
+    }
+
+    /* Style the input fields (Kept for CSS consistency but they are now removed in HTML) */
+    input {
+        display: block;
+        margin: 10px auto;
+        padding: 10px 15px;
+        width: calc(80% - 30px);
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        text-align: right;
+    }
+
+    /* Style the buttons (Kept for CSS consistency but they are now removed in HTML) */
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        width: calc(100% - 2px);
+        max-width: 200px;
+    }
+
+    button:hover {
+        background-color: #8000ff;
+    }
+
+    /* Style the result table */
+    table {
+        margin-top: 15px;
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table,
+    th,
+    td {
+        border: 1px solid #0a0909;
+    }
+
+    th {
+        width: 45%;
+        padding: 10px;
+        text-align: left;
+    }
+
+    td {
+        width: 55%;
+        padding: 10px;
+        text-align: right;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    /* Container for share buttons */
+    #shareButtons {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    /* Styling the WhatsApp share button */
+    #shareWhatsApp {
+        padding: 10px 15px;
+        font-size: 0.875rem;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #25d366;
+        color: white;
+        align-items: center;
+    }
+
+    #shareWhatsApp i {
+        margin-right: 8px;
+    }
+
+    /* WhatsApp share button hover effect */
+    #shareWhatsApp:hover {
+        background-color: #1ebea5;
+    }
+
+    /* Flying bird effect */
+    .bird {
+        background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/174479/bird-cells-new.svg");
+        filter: invert(34%) sepia(55%) saturate(427%) hue-rotate(141deg) brightness(93%) contrast(91%);
+        background-size: auto 100%;
+        width: 88px;
+        height: 125px;
+        will-change: background-position;
+        animation-name: fly-cycle;
+        animation-timing-function: steps(10);
+        animation-iteration-count: infinite;
+    }
+
+    .bird-one {
+        animation-duration: 1s;
+        animation-delay: -0.5s;
+    }
+
+    .bird-two {
+        animation-duration: 0.9s;
+        animation-delay: -0.75s;
+    }
+
+    .bird-three {
+        animation-duration: 1.25s;
+        animation-delay: -0.25s;
+    }
+
+    .bird-four {
+        animation-duration: 1.1s;
+        animation-delay: -0.5s;
+    }
+
+    .bird-container {
+        position: absolute;
+        top: 10%;
+        left: -3%;
+        transform: scale(0) translateX(-10vw);
+        will-change: transform;
+        animation-name: fly-right-one;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+    }
+
+    .bird-container-one {
+        animation-duration: 15s;
+        animation-delay: 0;
+    }
+
+    .bird-container-two {
+        animation-duration: 16s;
+        animation-delay: 1s;
+    }
+
+    .bird-container-three {
+        animation-duration: 14.6s;
+        animation-delay: 9.5s;
+    }
+
+    .bird-container-four {
+        animation-duration: 16s;
+        animation-delay: 10.25s;
+    }
+
+    @keyframes fly-cycle {
+        100% {
+            background-position: -900px 0;
+        }
+    }
+
+    @keyframes fly-right-one {
+        0% {
+            transform: scale(0.3) translateX(-10vw);
+        }
+
+        10% {
+            transform: translateY(2vh) translateX(10vw) scale(0.4);
+        }
+
+        20% {
+            transform: translateY(0vh) translateX(30vw) scale(0.5);
+        }
+
+        30% {
+            transform: translateY(4vh) translateX(50vw) scale(0.6);
+        }
+
+        40% {
+            transform: translateY(2vh) translateX(70vw) scale(0.6);
+        }
+
+        50% {
+            transform: translateY(0vh) translateX(90vw) scale(0.6);
+        }
+
+        60% {
+            transform: translateY(0vh) translateX(110vw) scale(0.6);
+        }
+
+        100% {
+            transform: translateY(0vh) translateX(110vw) scale(0.6);
+        }
+    }
+
+    @keyframes fly-right-two {
+        0% {
+            transform: translateY(-2vh) translateX(-10vw) scale(0.5);
+        }
+
+        10% {
+            transform: translateY(0vh) translateX(10vw) scale(0.4);
+        }
+
+        20% {
+            transform: translateY(-4vh) translateX(30vw) scale(0.6);
+        }
+
+        30% {
+            transform: translateY(1vh) translateX(50vw) scale(0.45);
+        }
+
+        40% {
+            transform: translateY(-2.5vh) translateX(70vw) scale(0.5);
+        }
+
+        50% {
+            transform: translateY(0vh) translateX(90vw) scale(0.45);
+        }
+
+        51% {
+            transform: translateY(0vh) translateX(110vw) scale(0.45);
+        }
+
+        100% {
+            transform: translateY(0vh) translateX(110vw) scale(0.45);
+        }
+    }
+
+    /* Popup */
+    #popup {
+        display: none;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.5);
+        padding: 10px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    /* Placeholder */
+    .input-container {
+        position: relative;
+        width: 200px;
+        margin: auto;
+    }
+
+    .input-container input {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .input-container::before {
+        content: attr(data-placeholder);
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        color: #999;
+        pointer-events: none;
+        transition: all 0.2s;
+        text-align: right;
+    }
+
+    .input-container input:focus::before,
+    .input-container input:not(:placeholder-shown)::before {
+        transform: translateY(-20px);
+        font-size: 0.75rem;
+        color: #666;
+    }
+
+    /* Logo rotate */
+    .logo {
+        display: flex;
+        width: 53px;
+        height: 53px;
+        cursor: pointer;
+    }
+
+    .rotate {
+        animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Waves */
+    .header {
+        position: relative;
+        text-align: center;
+        background: linear-gradient(109.6deg,
+                rgba(156, 252, 248, 1) 11.2%,
+                rgba(110, 123, 251, 1) 91.1%);
+    }
+
+    .inner-header {
+        height: 83vh;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+
+    .flex {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .waves {
+        position: relative;
+        width: 100%;
+        height: 15vh;
+        margin-bottom: -7px;
+        min-height: 100px;
+        max-height: 150px;
+    }
+
+    .parallax>use {
+        animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+    }
+
+    .parallax>use:nth-child(1) {
+        animation-delay: -2s;
+        animation-duration: 7s;
+    }
+
+    .parallax>use:nth-child(2) {
+        animation-delay: -3s;
+        animation-duration: 10s;
+    }
+
+    .parallax>use:nth-child(3) {
+        animation-delay: -4s;
+        animation-duration: 13s;
+    }
+
+    .parallax>use:nth-child(4) {
+        animation-delay: -5s;
+        animation-duration: 20s;
+    }
+
+    @keyframes move-forever {
+        0% {
+            transform: translate3d(-90px, 0, 0);
+        }
+
+        100% {
+            transform: translate3d(85px, 0, 0);
+        }
+    }
+
+    /* Shrinking for mobile */
+    @media (max-width: 400px) {
+        .waves {
+            height: 40px;
+            min-height: 40px;
+        }
+
+        .content {
+            height: 30vh;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+        }
+
+        #dateTime {
+            font-size: 0.875rem;
+        }
+
+        input {
+            width: calc(90% - 30px);
+        }
+
+        button {
+            width: 100%;
+            max-width: 200px;
+        }
+    }
+
+    .container-content {
+        margin-top: -13%;
+    }
+
+    /* Fullscreen table styles */
+    .fullscreen {
+        position: fixed;
+        margin-top: -0.01%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 1000;
+        font-weight: bold;
+        padding: 10px;
+        font-size: 1.2em;
+    }
+
+    .fullscreen:active {
+        animation-name: jiggle;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+
+    @keyframes jiggle {
+        1% {
+            transform: translate(0px, 0px) rotate(0deg);
+        }
+
+        5% {
+            transform: translate(1px, -1px) rotate(-1deg);
+        }
+
+        10% {
+            transform: translate(2px, -2px) rotate(0deg);
+        }
+
+        15% {
+            transform: translate(3px, -3px) rotate(1deg);
+        }
+
+        20% {
+            transform: translate(2px, -2px) rotate(0deg);
+        }
+
+        25% {
+            transform: translate(1px, -1px) rotate(-1deg);
+        }
+
+        30% {
+            transform: translate(0px, 0px) rotate(0deg);
+        }
+
+        35% {
+            transform: translate(-1px, 1px) rotate(1deg);
+        }
+
+        40% {
+            transform: translate(-2px, 2px) rotate(0deg);
+        }
+
+        45% {
+            transform: translate(-3px, 3px) rotate(-1deg);
+        }
+
+        50% {
+            transform: translate(-2px, 2px) rotate(1deg);
+        }
+
+        55% {
+            transform: translate(-1px, 1px) rotate(1deg);
+        }
+
+        60% {
+            transform: translate(0px, 0px) rotate(0deg);
+        }
+    }
+
+    /* Add glow effect on focus */
+    .input-container input:focus {
+        outline: none;
+        box-shadow: 0 0 10px red;
+    }
+
+    /* Add animation for glowing effect */
+    @keyframes glow {
+        0% {
+            box-shadow: 0 0 10px red;
+        }
+
+        50% {
+            box-shadow: 0 0 15px red;
+        }
+
+        100% {
+            box-shadow: 0 0 10px red;
+        }
+    }
+
+    .input-container input:focus {
+        animation: glow 0.5s infinite alternate;
+    }
+
+    /* Initial hidden position and opacity */
+    .fade-in-left {
+        opacity: 0;
+        transform: translateX(-200px);
+        transition: opacity 1s ease, transform 1s ease;
+    }
+
+    /* Triggered class for animation */
+    .fade-in-left.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    /* --- DRAWER/MENU STYLES --- */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+        z-index: 250;
+    }
+
+    .overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .drawer {
+        position: absolute;
+        top: 0;
+        right: -260px;
+        width: 260px;
+        height: 100%;
+        background: #ffffff;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.25);
+        transition: right 0.3s;
+        z-index: 300;
+        overflow-y: auto;
+    }
+
+    .drawer.open {
+        right: 0;
+    }
+
+    /* Drawer Header Styles (with Logo) */
+    .drawer-header {
+        position: sticky;
+        top: 0;
+        padding: 15px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #1a73e8;
+        color: white;
+        z-index: 350;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        height: 60px;
+        box-sizing: border-box;
+    }
+
+    .brand-logo img {
+        height: 40px;
+        width: auto;
+        border-radius: 4px;
+        background-color: white;
+        padding: 2px;
+    }
+
+    .brand-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+
+    .brand-text span:first-child {
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+    .brand-text span:last-child {
+        font-weight: 300;
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    /* Drawer Links/Buttons (Updated for Flex and Icon) */
+    .accordion-btn {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
+        line-height: 1.5;
+        color: black;
+        /* Default text color */
+    }
+
+    .accordion-btn a {
+        /* Remove styling from the link so the parent div controls color/background */
+        color: inherit;
+        text-decoration: none !important;
+        display: flex;
+        /* Makes sure icons and text inside link align */
+        align-items: center;
+        width: 100%;
+        /* Important for the link to take full space for clickability */
+    }
+
+    /* Hover Styles for the Button */
+    .accordion-btn:hover {
+        background: #0f5fcc;
+        /* Darker blue on hover */
+        color: white !important;
+    }
+
+    /* ACTIVE STYLES: Target the Button directly */
+    .accordion-btn.active {
+        background: #1a73e8;
+        /* Blue background for active state */
+        color: white !important;
+        /* White text color */
+    }
+
+    /* Main Icons (e.g., fas fa-home) */
+    .accordion-btn .main-icon {
+        margin-right: 18px;
+        font-size: 22px;
+        color: #1a73e8;
+        /* Blue icon color default */
+    }
+
+    /* Icons in Hover/Active state */
+    .accordion-btn:hover .main-icon,
+    .accordion-btn.active .main-icon {
+        color: white !important;
+    }
+
+    /* NEW: Toggle Icon Styles */
+    .toggle-icon {
+        font-size: 14px !important;
+        color: #1a73e8 !important;
+        transition: transform 0.2s;
+        flex-shrink: 0;
+        /* Prevent icon from shrinking */
+    }
+
+    /* Toggle icon in Hover/Active state */
+    .accordion-btn:hover .toggle-icon,
+    .accordion-btn.active .toggle-icon {
+        color: white !important;
+    }
+
+    /* Accordion submenu styles */
+    .submenu {
+        display: none;
+        background: #f1f1f1;
+    }
+
+    /* Submenu Button Styles */
+    .submenu .accordion-btn {
+        padding-left: 32px;
+        font-size: 15px;
+        color: black;
+        /* Reset color for submenu items */
+        justify-content: flex-start;
+        /* Submenu items don't need justify-content: space-between */
+    }
+
+    /* Submenu link text color fix */
+    .submenu .accordion-btn a {
+        color: black;
+    }
+
+    /* Submenu Active Styles - Target the Button */
+    .submenu .accordion-btn.active {
+        background: #1a73e8;
+        color: white !important;
+    }
+
+    /* Submenu Link Hover/Active */
+    .submenu .accordion-btn:hover a,
+    .submenu .accordion-btn.active a {
+        color: white !important;
+    }
+
+    .submenu .accordion-btn .toggle-icon {
+        display: none;
+        /* Submenu items don't need a toggle icon */
+    }
+
+    .bird-container,
+    .bird-container-one,
+    .bird-container-two,
+    .bird-container-three,
+    .bird-container-four {
+        z-index: 1;
+    }
+
+    /* --- FORCE FIX FOR MENU BUTTON (Xiaomi K20 Pro Fix) --- */
+
+    /* 1. Disable the navbar container */
+    .navbar,
+    .navbar-wrapper {
+        pointer-events: none;
+        width: 0;
+        height: 0;
+        overflow: visible;
+        z-index: 10001 !important;
+    }
+
+    /* 2. Position the button directly on the screen */
+    .menu-btn {
+        position: absolute;
+        /* Stick to screen glass */
+        top: 20px;
+        /* 20px from top */
+        right: 15px;
+        /* 20px from right */
+
+        /* Z-INDEX: Above the overlay (250) but BELOW the drawer (300) */
+        z-index: 10002 !important;
+
+        /* Bubble Style */
+        color: #ffffff;
+        background-color: rgba(0, 0, 0, 0.25);
+        /* Semi-transparent black bubble */
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+
+        /* Centering */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+
+        /* Touch optimization */
+        backdrop-filter: blur(4px);
+        cursor: pointer;
+        user-select: none;
+        pointer-events: auto;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .menu-btn:active {
+        background-color: rgba(0, 0, 0, 0.5);
+        transform: scale(0.95);
+    }
+
+    /* Additional inline styles can go here if needed */
+    #drawerOverlay,
+    #drawerMenu {
+        z-index: 10002 !important;
+        /* Must be higher than menu-btn to appear over it */
+    }
+
+    /* Styles related to hidden inputs (mostly redundant now but kept for safety) */
+    #inputDate::-webkit-calendar-picker-indicator {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    #inputDate[readonly] {
+        cursor: default;
+        color: #333;
+        pointer-events: none;
+    }
+</style>
+
+<body>
+    <script>
+        // Custom message function
+        function showCustomMessage(msg, type = 'error') {
+            // For a display-only report, we use console logging for messages that would otherwise appear in a toast/popup.
+            console.log(`[${type.toUpperCase()}] ${msg}`);
+        }
+    </script>
+
+
+    <div class="header">
+        <div class="inner-header flex">
+            <div class="bird-container bird-container-one">
+                <div class="bird bird-one"></div>
+            </div>
+            <div class="bird-container bird-container-two">
+                <div class="bird bird-two"></div>
+            </div>
+            <div class="bird-container bird-container-three">
+                <div class="bird bird-three"></div>
+            </div>
+            <div class="bird-container bird-container-four">
+                <div class="bird bird-four"></div>
+            </div>
+
+            <div class="container fade-in-left" id="fadeDiv">
+                <img src="http://rokonbpl.atwebpages.com/blpa_logo.png" class="logo" alt="logo" id="logo"
+                    onclick="toggleRotation()" />
+
+                <div class="container-content">
+                    <h1>Akhaura Land Port</h1>
+                    <p>Today's Statement</p>
+
+                    <p id="dateTime"></p>
+
+                </div>
+
+                <table id="resultTable" style="display: none">
+                    <tr>
+                        <th>Total Trucks</th>
+                        <td id="totaltruck" style="text-align: center"></td>
+                    </tr>
+                    <tr>
+                        <th>Entry Fees</th>
+                        <td id="entryfee"></td>
+                    </tr>
+                    <tr id="haltageRow">
+                        <th>Haltage Fees</th>
+                        <td id="haltagefee"></td>
+                    </tr>
+                    <tr>
+                        <th>Wgt. Charges</th>
+                        <td id="weightfee"></td>
+                    </tr>
+                    <tr>
+                        <th>Port Charges</th>
+                        <td id="portcharge"></td>
+                    </tr>
+                    <tr>
+                        <th>VAT</th>
+                        <td id="vat"></td>
+                    </tr>
+                    <tr>
+                        <th>Total Revenue</th>
+                        <td id="revenue"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div>
+            <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                <defs>
+                    <path id="gentle-wave"
+                        d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                </defs>
+                <g class="parallax">
+                    <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7)" />
+                    <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+                    <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+                    <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
+                </g>
+            </svg>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Utility Functions (Unchanged) ---       
+
+        function formatDateTime() {
+            const now = new Date();
+
+            const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            const dayName = days[now.getDay()];
+            const day = String(now.getDate()).padStart(2, "0");
+            const month = months[now.getMonth()];
+            const year = now.getFullYear();
+
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, "0");
+            const seconds = String(now.getSeconds()).padStart(2, "0");
+
+            const ampm = hours >= 12 ? "PM" : "AM";
+            hours = hours % 12 || 12; // Convert to 12-hour format
+
+            return `${dayName} ${day} ${month} ${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
+        }
+
+        // Example usage:
+        document.getElementById("dateTime").innerText = formatDateTime();
+
+        // Live update every second:
+        setInterval(() => {
+            document.getElementById("dateTime").innerText = formatDateTime();
+        }, 1000);
+
+        // ===== Utility Function: Round Up to Two Decimal Places =====
+        function roundUpToTwoDecimalPlaces(number) {
+            return Math.round(number * 100) / 100;
+        }
+
+        function toggleRotation() {
+            document.getElementById("logo").classList.toggle("rotate");
+        }
+
+        window.addEventListener("load", () => {
+            document.getElementById("fadeDiv").classList.add("show");
+        });
+
+        // ===== REUSABLE FUNCTION: Calculate and Display Results (simplified) =====
+        function calculateAndDisplayResults(num1, num2, num3, finalDateTime) {
+            // --- Define Fee and Rate Constants ---
+            const SMALL_TRUCK_RATE = 73.17;
+            const BIG_TRUCK_RATE = 146.27;
+            const HOLTAGE_DAY_RATE = 190.17;
+            const WEIGHT_CHARGE_RATE = 146.34;
+            const VAT_RATE = 0.15;
+            // ------------------------------------
+
+            const totalTruck = num1 + num2;
+
+            // Calculations using variables
+            const formattedSmall = roundUpToTwoDecimalPlaces(num1 * SMALL_TRUCK_RATE);
+            const formattedBig = roundUpToTwoDecimalPlaces(num2 * BIG_TRUCK_RATE);
+
+            const formattedEntryfee = roundUpToTwoDecimalPlaces(formattedSmall + formattedBig);
+            const formattedHoltagefee = roundUpToTwoDecimalPlaces(num3 * HOLTAGE_DAY_RATE);
+            const formattedWeightfee = roundUpToTwoDecimalPlaces(totalTruck * WEIGHT_CHARGE_RATE);
+
+            const formattedPortcharge = roundUpToTwoDecimalPlaces(
+                formattedEntryfee + formattedHoltagefee + formattedWeightfee
+            );
+
+            const formattedVat = roundUpToTwoDecimalPlaces(formattedPortcharge * VAT_RATE);
+            const formattedRevenue = roundUpToTwoDecimalPlaces(formattedPortcharge + formattedVat);
+
+            // --- Display Results ---
+            document.getElementById("resultTable").style.display = "table";
+            document.getElementById("weightfee").innerText = `${formattedWeightfee}/-`;
+            document.getElementById("portcharge").innerText = `${formattedPortcharge}/-`;
+            document.getElementById("vat").innerText = `${formattedVat}/-`;
+            document.getElementById("revenue").innerText = `${formattedRevenue}/-`;
+
+            if (num3 === 0) {
+                document.getElementById("haltageRow").style.display = "none";
+            } else {
+                document.getElementById("haltageRow").style.display = "table-row";
+                document.getElementById("haltagefee").innerText = `${formattedHoltagefee}/-`;
+            }
+
+            // Display Total Trucks
+            let totalTruckText;
+            if (num1 === 0 && num2 <= 1) totalTruckText = `${num2} Big Truck`;
+            else if (num1 === 0 && num2 > 1) totalTruckText = `${num2} Big Trucks`;
+            else if (num2 === 0 && num1 <= 1) totalTruckText = `${num1} Small Truck`;
+            else if (num2 === 0 && num1 > 1) totalTruckText = `${num1} Small Trucks`;
+            else totalTruckText = `${num1} Small + ${num2} Big = ${totalTruck} Trucks`;
+
+            document.getElementById("totaltruck").innerText = totalTruckText;
+            document.getElementById("entryfee").innerText = `${formattedSmall} + ${formattedBig} = ${formattedEntryfee}/-`;
+        }
+
+
+        // ===== Date Change/Load Logic (Refactored to be a separate, reusable function) =====
+        function loadDataForDate(selectedDate) {
+            const resultTable = document.getElementById("resultTable");
+
+            const resetForm = (message) => {
+                resultTable.style.display = "none";
+                if (message) showCustomMessage(message, 'info');
+            };
+
+            if (!selectedDate) {
+                resetForm();
+                return;
+            }
+
+            const fetchUrl = `http://rokonbpl.atwebpages.com/fetch_export_data.php?date=${selectedDate}`;
+
+            console.log("Attempting to fetch data from URL:", fetchUrl);
+            showCustomMessage("Fetching data for date: " + selectedDate, 'info');
+
+            // --- The Fetch Request ---
+            fetch(fetchUrl)
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
+                    }
+                    return res.json();
+                })
+                .then(response => {
+                    if (response.success && response.data) {
+                        const data = response.data;
+
+                        // 1. Get numbers directly from data
+                        const num1 = parseInt(data.small_truck) || 0;
+                        const num2 = parseInt(data.big_truck) || 0;
+                        const num3 = parseInt(data.holtage_days) || 0;
+
+                        // Use the current date/time for calculation
+                        const finalDateTime = `${selectedDate} 00:00:00`;
+
+                        calculateAndDisplayResults(
+                            num1,
+                            num2,
+                            num3,
+                            finalDateTime
+                        );
+                        console.log("Data loaded for date:", selectedDate);
+                    } else {
+                        // No entry found in DB or error
+                        resetForm(`No data found for ${selectedDate}. Showing default 0s.`);
+                        // Manually calculate and display 0s
+                        calculateAndDisplayResults(0, 0, 0, `${selectedDate} 00:00:00`);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching data:", err);
+                    const errorMessage = (err && err.message) ? err.message : String(err);
+                    resetForm(`FETCH FAILED. Error: ${errorMessage}. Showing default 0s.`);
+                    // Manually calculate and display 0s
+                    calculateAndDisplayResults(0, 0, 0, `${selectedDate} 00:00:00`);
+                });
+        }
+
+        // ===== Auto-select Today's Date and Load Data (New Feature) =====
+        function setTodayAndLoadData() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, "0");
+            const day = String(today.getDate()).padStart(2, "0");
+            const todayDateString = `${year}-${month}-${day}`;
+
+            // Manually trigger the data fetching and calculation logic
+            loadDataForDate(todayDateString);
+        }
+
+        // Call this function when the window finishes loading
+        window.addEventListener("load", setTodayAndLoadData);
+
+
+
+
+    </script>
+</body>
+
+</html>
