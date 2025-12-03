@@ -835,6 +835,14 @@
 
             document.getElementById("totaltruck").innerText = totalTruckText;
             document.getElementById("entryfee").innerText = `${formattedSmall} + ${formattedBig} = ${formattedEntryfee}/-`;
+
+            const copyButton = document.getElementById("copyStatementButton");
+            copyButton.onclick = null; // Clear existing listener
+
+            // Attach the new copy logic
+            copyButton.onclick = function() {
+                copyStatement(num1, num2, num3, formattedRevenue, totalTruck);
+            };
         }
 
         // ===== NEW FUNCTION: Copy Statement to Clipboard =====
