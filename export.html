@@ -842,7 +842,7 @@
             else totalTruckText = `${num1} Small + ${num2} Big = ${totalTruck} Trucks`;
 
             document.getElementById("totaltruck").innerText = totalTruckText;
-            document.getElementById("entryfee").innerText = `${smallEntryFee.toFixed(2)}+${bigEntryFee.toFixed(2)}=${formattedEntryfee}/-`;
+            document.getElementById("entryfee").innerText = `${formattedSmall}+${formattedBig}=${formattedEntryfee}/-`;
 
             // Attach the new copy logic
             copyButton.onclick = function() {
