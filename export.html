@@ -6,16 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Content-Security-Policy"
         content="
-             default-src 'self' https: data: blob:;
-             img-src 'self' https: data:;
-             script-src 'self' 'unsafe-inline';
-             style-src 'self' 'unsafe-inline';
-             connect-src 'self' https: data:;
-             font-src 'self' https: data:;000000000
-             media-src 'self' https: data:;
-             object-src 'none';
-             frame-ancestors 'none';
-             ">
+            default-src 'self' https: data: blob:;
+            img-src 'self' https: data:;
+            script-src 'self' 'unsafe-inline';
+            style-src 'self' 'unsafe-inline';
+            connect-src 'self' https: data:;
+            font-src 'self' https: data:;000000000
+            media-src 'self' https: data:;
+            object-src 'none';
+            frame-ancestors 'none';
+            ">
 
 
     <title>Daily Statement</title>
@@ -586,39 +586,42 @@
         z-index: 1;
     }
 
-  
 
     /* New style for the "No Data" card */
-#noDataCard {
-    display: none; /* Initially hidden */
-    background-color: #f8d7da; /* Light red/pink background for alert feel */
-    
-    color: #721c24; /* Dark red text */
-    border: 1px solid #f5c6cb;
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 15px;
-    text-align: center;
-    font-size: 1.2em;
-    font-weight: bold;
-    /* Ensure it has the same width characteristics as the table */
-    width: 100%;
-    /* Min height to simulate table size */
-    min-height: 150px; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-#noDataCard i {
-    font-size: 2em;
-    margin-bottom: 10px;
-}
+    #noDataCard {
+        display: none;
+        /* Initially hidden */
+        background-color: #f8d7da;
+        /* Light red/pink background for alert feel */
+
+        color: #721c24;
+        /* Dark red text */
+        border: 1px solid #f5c6cb;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 15px;
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: bold;
+        /* Ensure it has the same width characteristics as the table */
+        width: 100%;
+        /* Min height to simulate table size */
+        min-height: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    #noDataCard i {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
 </style>
 
 <body>
     <script>
-        // Custom message function
+        // Custom message function (Placeholder for popups)
         function showCustomMessage(msg, type = 'error') {
             // For a display-only report, we use console logging for messages that would otherwise appear in a toast/popup.
             console.log(`[${type.toUpperCase()}] ${msg}`);
@@ -642,7 +645,9 @@
             </div>
 
             <div class="container fade-in-left" id="fadeDiv">
-                <img src="blpa_logo.png" class="logo" alt="logo" id="logo" onclick="toggleRotation()" />
+                <!-- Using a generic placeholder for the logo image -->
+                <img src="https://placehold.co/53x53/6e7bfb/ffffff?text=ALP" class="logo" alt="logo" id="logo"
+                    onclick="toggleRotation()" />
 
                 <div class="container-content">
                     <h1>Akhaura Land Port</h1>
@@ -679,23 +684,23 @@
                         <td id="portcharge"></td>
                     </tr>
                     <tr>
-                        <th>VAT</th>
+                        <th>VAT (15%)</th>
                         <td id="vat"></td>
                     </tr>
                     <tr>
-                        <th>Total Revenue</th>
+                        <th>Total Revenue (BDT)</th>
                         <td id="revenue"></td>
                     </tr>
-                </table>        
+                </table>
                 <div id="shareButtons" style="display: flex; margin-top: 15px; justify-content: center;">
-                    <button id="copyStatementButton" style="display: none;">
-                        <i class="fas fa-copy"></i> Copy Statement
-                    </button>
-                </div>
+                    <button id="copyStatementButton" style="display: none;">
+                        <i class="fas fa-copy"></i> Copy Statement
+                    </button>
+                </div>
             </div>
         </div>
         <div>
-            <svg class="waves" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink"
+            <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                 viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
                 <defs>
                     <path id="gentle-wave"
@@ -713,7 +718,7 @@
 
 
     <script>
-        // --- Utility Functions (Unchanged) ---
+        // --- Utility Functions ---
         function formatDateTime() {
             const now = new Date();
 
@@ -737,7 +742,7 @@
             return `${dayName} ${day} ${month} ${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
         }
 
-        // Example usage:
+        // Display current date/time on load
         document.getElementById("dateTime").innerText = formatDateTime();
 
         // Live update every second:
@@ -758,34 +763,51 @@
             document.getElementById("fadeDiv").classList.add("show");
         });
 
-        // ===== REUSABLE FUNCTION: Calculate and Display Results (MODIFIED for conditional visibility) =====
+        // ===== NEW FUNCTION: Copy Statement to Clipboard =====
+        function copyStatement(num1, num2, num3, formattedRevenue, totalTruck) {
+            // Statement format: Trucks: 10 Small + 5 Big = 15, Haltage Days = 2, Total Revenue: 5000/-
+            const statement = `Trucks: ${num1} Small + ${num2} Big = ${totalTruck}, Haltage Days = ${num3}, Total Revenue: ${formattedRevenue}/-`;
+
+            // Use execCommand('copy') as navigator.clipboard might fail in iFrames
+            const tempInput = document.createElement('textarea');
+            tempInput.value = statement;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand('copy');
+                showCustomMessage("Statement copied to clipboard successfully!", 'success');
+            } catch (err) {
+                showCustomMessage("Failed to copy statement. Error: " + err, 'error');
+            } finally {
+                document.body.removeChild(tempInput);
+            }
+        }
+
+
+        // ===== REUSABLE FUNCTION: Calculate and Display Results =====
         function calculateAndDisplayResults(num1, num2, num3, selectedDate) {
+            // Get DOM elements once
             const resultTable = document.getElementById("resultTable");
             const noDataCard = document.getElementById("noDataCard");
+            const copyButton = document.getElementById("copyStatementButton"); // Get the button
 
             // Check if all data is zero
             const isNoData = num1 === 0 && num2 === 0 && num3 === 0;
 
-            const resultTable = document.getElementById("resultTable");
-            const noDataCard = document.getElementById("noDataCard");
-            const copyButton = document.getElementById("copyStatementButton"); // Get the button
+            if (isNoData) {
+                // If all counts are 0, hide the table/button and show the card
+                resultTable.style.display = "none";
+                noDataCard.style.display = "flex"; // Use flex to center content
+                copyButton.style.display = "none";
+                console.log(`No data found for ${selectedDate}. Displaying 'No Data' card.`);
+                return; // Stop execution, no need for calculations
+            }
 
-            // Check if all data is zero
-            const isNoData = num1 === 0 && num2 === 0 && num3 === 0;
-
-            if (isNoData) {
-                // If all counts are 0, hide the table and show the card
-                resultTable.style.display = "none";
-                noDataCard.style.display = "flex"; // Use flex to center content
-                copyButton.style.display = "none"; // *** HIDE THE BUTTON ***
-                console.log(`No data found for ${selectedDate}. Displaying 'No Data' card.`);
-                return; // Stop execution, no need for calculations
-            }
-
-            // If there is data, show the table and hide the card
-            resultTable.style.display = "table";
-            noDataCard.style.display = "none";
-            copyButton.style.display = "inline-block"; // *** SHOW THE BUTTON ***
+            // If there is data, show the table and hide the card
+            resultTable.style.display = "table";
+            noDataCard.style.display = "none";
+            copyButton.style.display = "inline-block";
 
             // --- Define Fee and Rate Constants ---
             const SMALL_TRUCK_RATE = 73.17;
@@ -834,101 +856,93 @@
             else totalTruckText = `${num1} Small + ${num2} Big = ${totalTruck} Trucks`;
 
             document.getElementById("totaltruck").innerText = totalTruckText;
-            document.getElementById("entryfee").innerText = `${formattedSmall} + ${formattedBig} = ${formattedEntryfee}/-`;
+            document.getElementById("entryfee").innerText = `${formattedEntryfee}/- (${formattedSmall} + ${formattedBig})`;
 
-            const copyButton = document.getElementById("copyStatementButton");
-            copyButton.onclick = null; // Clear existing listener
-
-            // Attach the new copy logic
-            copyButton.onclick = function() {
-                copyStatement(num1, num2, num3, formattedRevenue, totalTruck);
-            };
+            // Attach the new copy logic
+            copyButton.onclick = function() {
+                copyStatement(num1, num2, num3, formattedRevenue, totalTruck);
+            };
         }
-
-        // ===== NEW FUNCTION: Copy Statement to Clipboard =====
-        function copyStatement(num1, num2, num3, formattedRevenue, totalTruck) {
-            const statement = `Trucks: ${num1} Small + ${num2} Big = ${totalTruck}, Haltage Days = ${num3}, Total Revenue: ${formattedRevenue}/-`;
-
-            navigator.clipboard.writeText(statement)
-                .then(() => {
-                    showCustomMessage("Statement copied to clipboard successfully!", 'success');
-                })
-                .catch(err => {
-                    showCustomMessage("Failed to copy statement. Error: " + err, 'error');
-                });
-        }
-
 
         // ===== Date Change/Load Logic (Refactored) =====
         function loadDataForDate(selectedDate) {
-    const resultTable = document.getElementById("resultTable");
-    const noDataCard = document.getElementById("noDataCard"); // Get the new card
+            const resultTable = document.getElementById("resultTable");
+            const noDataCard = document.getElementById("noDataCard"); // Get the new card
+            const copyButton = document.getElementById("copyStatementButton"); // Get the new button
 
-    const resetDisplay = (isDataFound, message) => {
-        if (isDataFound) {
-            resultTable.style.display = "table";
-            noDataCard.style.display = "none";
-        } else {
-            resultTable.style.display = "none";
-            noDataCard.style.display = "flex"; // Use flex to center content
+            const resetDisplay = (isDataFound, message) => {
+                if (isDataFound) {
+                    resultTable.style.display = "table";
+                    noDataCard.style.display = "none";
+                    copyButton.style.display = "inline-block";
+                } else {
+                    resultTable.style.display = "none";
+                    noDataCard.style.display = "flex"; // Use flex to center content
+                    copyButton.style.display = "none";
+                }
+                if (message) showCustomMessage(message, isDataFound ? 'info' : 'error');
+            };
+
+            if (!selectedDate) {
+                resetDisplay(false, "No date selected.");
+                return;
+            }
+
+            // Using the provided worker URL
+            const fetchUrl = `https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
+
+            console.log("Attempting to fetch data from URL:", fetchUrl);
+            showCustomMessage("Fetching data for date: " + selectedDate, 'info');
+
+            // --- The Fetch Request ---
+            fetch(fetchUrl)
+                .then(res => {
+                    if (!res.ok) {
+                        // Treat non-200 responses as no data/error
+                        throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
+                    }
+                    return res.json();
+                })
+                .then(response => {
+                    // Check for success and actual data counts
+                    const dataExists = response.success && response.data && (
+                        parseInt(response.data.small_truck) > 0 ||
+                        parseInt(response.data.big_truck) > 0 ||
+                        parseInt(response.data.holtage_days) > 0
+                    );
+
+                    if (dataExists) {
+                        const data = response.data;
+
+                        // 1. Get numbers directly from data
+                        const num1 = parseInt(data.small_truck) || 0;
+                        const num2 = parseInt(data.big_truck) || 0;
+                        const num3 = parseInt(data.holtage_days) || 0;
+
+                        // Date for display/logging purposes
+                        const finalDateTime = `${selectedDate} 00:00:00`;
+
+                        calculateAndDisplayResults(
+                            num1,
+                            num2,
+                            num3,
+                            finalDateTime
+                        );
+                        resetDisplay(true, "Data successfully loaded."); // Show table
+                        console.log("Data loaded for date:", selectedDate);
+                    } else {
+                        // No entry found in DB or data is all zero/missing fields
+                        resetDisplay(false, `No transaction data found for ${selectedDate}.`); // Show no data card
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching data:", err);
+                    const errorMessage = (err && err.message) ? err.message : String(err);
+                    resetDisplay(false, `FETCH FAILED. Error: ${errorMessage}.`); // Show no data card on error
+                });
         }
-        if (message) showCustomMessage(message, isDataFound ? 'info' : 'error');
-    };
 
-    if (!selectedDate) {
-        // If no date is selected (shouldn't happen with auto-load), default to no data view
-        resetDisplay(false, "No date selected.");
-        return;
-    }
-
-    const fetchUrl = `https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
-
-    console.log("Attempting to fetch data from URL:", fetchUrl);
-    showCustomMessage("Fetching data for date: " + selectedDate, 'info');
-
-    // --- The Fetch Request ---
-    fetch(fetchUrl)
-        .then(res => {
-            if (!res.ok) {
-                // Treat non-200 responses as no data/error
-                throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
-            }
-            return res.json();
-        })
-        .then(response => {
-            if (response.success && response.data && (parseInt(response.data.small_truck) > 0 || parseInt(response.data.big_truck) > 0 || parseInt(response.data.holtage_days) > 0)) {
-                // Data FOUND and contains actual truck/holtage entries
-                const data = response.data;
-
-                // 1. Get numbers directly from data
-                const num1 = parseInt(data.small_truck) || 0;
-                const num2 = parseInt(data.big_truck) || 0;
-                const num3 = parseInt(data.holtage_days) || 0;
-
-                // Use the current date/time for calculation
-                const finalDateTime = `${selectedDate} 00:00:00`;
-
-                calculateAndDisplayResults(
-                    num1,
-                    num2,
-                    num3,
-                    finalDateTime
-                );
-                resetDisplay(true, "Data successfully loaded."); // Show table
-                console.log("Data loaded for date:", selectedDate);
-            } else {
-                // No entry found in DB or data is all zero/missing fields
-                resetDisplay(false, `No transaction data found for ${selectedDate}.`); // Show no data card
-            }
-        })
-        .catch(err => {
-            console.error("Error fetching data:", err);
-            const errorMessage = (err && err.message) ? err.message : String(err);
-            resetDisplay(false, `FETCH FAILED. Error: ${errorMessage}.`); // Show no data card on error
-        });
-}
-
-        // ===== Auto-select Today's Date and Load Data (Unchanged) =====
+        // ===== Auto-select Today's Date and Load Data =====
         function setTodayAndLoadData() {
             const today = new Date();
             const year = today.getFullYear();
