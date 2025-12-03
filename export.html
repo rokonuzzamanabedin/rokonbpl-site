@@ -839,38 +839,31 @@
         pointer-events: none;
     }
 
-    /* --- NEW CSS for No Data Card --- */
-    #noDataCard {
-        margin-top: 15px;
-        /* Matches table margin-top */
-        width: 100%;
-        /* Same width as table/container */
-        padding: 30px 10px;
-        /* Generous padding to create the card look */
-        border: 1px solid #ddd;
-        /* Soft border */
-        border-radius: 8px;
-        /* Rounded corners */
-        background-color: #ffe0e0;
-        /* Light red background */
-        color: #c00;
-        /* Dark red text */
-        font-weight: bold;
-        font-size: 1.1rem;
-        display: none;
-        /* Initially hidden */
-        min-height: 250px;
-        /* Give it a minimum height to be similar to the table's total height */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-    }
-
-    #noDataCard i {
-        font-size: 2.5rem;
-        margin-bottom: 15px;
-    }
+    /* New style for the "No Data" card */
+#noDataCard {
+    display: none; /* Initially hidden */
+    background-color: #f8d7da; /* Light red/pink background for alert feel */
+    color: #721c24; /* Dark red text */
+    border: 1px solid #f5c6cb;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 15px;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    /* Ensure it has the same width characteristics as the table */
+    width: 100%;
+    /* Min height to simulate table size */
+    min-height: 150px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+#noDataCard i {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
 </style>
 
 <body>
@@ -944,6 +937,10 @@
                         <td id="revenue"></td>
                     </tr>
                 </table>
+                <div id="noDataCard">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    No data submitted today.
+                </div>
             </div>
         </div>
         <div>
@@ -1084,70 +1081,72 @@
 
         // ===== Date Change/Load Logic (Refactored) =====
         function loadDataForDate(selectedDate) {
-            const noDataCard = document.getElementById("noDataCard");
-            const resultTable = document.getElementById("resultTable");
+    const resultTable = document.getElementById("resultTable");
+    const noDataCard = document.getElementById("noDataCard"); // Get the new card
 
-            // Reset visibility to default (hide both before fetching)
-            resultTable.style.display = "none";
+    const resetDisplay = (isDataFound, message) => {
+        if (isDataFound) {
+            resultTable.style.display = "table";
             noDataCard.style.display = "none";
-
-
-            if (!selectedDate) {
-                return;
-            }
-
-            const fetchUrl = `https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
-
-            console.log("Attempting to fetch data from URL:", fetchUrl);
-            showCustomMessage("Fetching data for date: " + selectedDate, 'info');
-
-            // --- The Fetch Request ---
-            fetch(fetchUrl)
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
-                    }
-                    return res.json();
-                })
-                .then(response => {
-                    // Check for general success AND presence of data object
-                    if (response.success && response.data) {
-                        const data = response.data;
-
-                        // 1. Get numbers directly from data
-                        const num1 = parseInt(data.small_truck) || 0;
-                        const num2 = parseInt(data.big_truck) || 0;
-                        const num3 = parseInt(data.holtage_days) || 0;
-
-                        // Use the current date/time for calculation
-                        // Note: finalDateTime is only used for console logging in the function now.
-                        const finalDateTime = `${selectedDate} 00:00:00`;
-
-                        // 2. Call the modified display function
-                        calculateAndDisplayResults(
-                            num1,
-                            num2,
-                            num3,
-                            selectedDate
-                        );
-                        console.log("Data processing complete for date:", selectedDate);
-
-                    } else {
-                        // Response success:true, but data is empty/null, OR success:false.
-                        // Treat as no data submitted (0, 0, 0)
-                        calculateAndDisplayResults(0, 0, 0, selectedDate);
-                    }
-                })
-                .catch(err => {
-                    // Fetch failed (network error, parsing error, etc.)
-                    console.error("Error fetching data:", err);
-                    const errorMessage = (err && err.message) ? err.message : String(err);
-                    showCustomMessage(`FETCH FAILED. Error: ${errorMessage}. Showing No Data Card.`, 'error');
-
-                    // Manually trigger the 'No Data' state
-                    calculateAndDisplayResults(0, 0, 0, selectedDate);
-                });
+        } else {
+            resultTable.style.display = "none";
+            noDataCard.style.display = "flex"; // Use flex to center content
         }
+        if (message) showCustomMessage(message, isDataFound ? 'info' : 'error');
+    };
+
+    if (!selectedDate) {
+        // If no date is selected (shouldn't happen with auto-load), default to no data view
+        resetDisplay(false, "No date selected.");
+        return;
+    }
+
+    const fetchUrl = `https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
+
+    console.log("Attempting to fetch data from URL:", fetchUrl);
+    showCustomMessage("Fetching data for date: " + selectedDate, 'info');
+
+    // --- The Fetch Request ---
+    fetch(fetchUrl)
+        .then(res => {
+            if (!res.ok) {
+                // Treat non-200 responses as no data/error
+                throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
+            }
+            return res.json();
+        })
+        .then(response => {
+            if (response.success && response.data && (parseInt(response.data.small_truck) > 0 || parseInt(response.data.big_truck) > 0 || parseInt(response.data.holtage_days) > 0)) {
+                // Data FOUND and contains actual truck/holtage entries
+                const data = response.data;
+
+                // 1. Get numbers directly from data
+                const num1 = parseInt(data.small_truck) || 0;
+                const num2 = parseInt(data.big_truck) || 0;
+                const num3 = parseInt(data.holtage_days) || 0;
+
+                // Use the current date/time for calculation
+                const finalDateTime = `${selectedDate} 00:00:00`;
+
+                calculateAndDisplayResults(
+                    num1,
+                    num2,
+                    num3,
+                    finalDateTime
+                );
+                resetDisplay(true, "Data successfully loaded."); // Show table
+                console.log("Data loaded for date:", selectedDate);
+            } else {
+                // No entry found in DB or data is all zero/missing fields
+                resetDisplay(false, `No transaction data found for ${selectedDate}.`); // Show no data card
+            }
+        })
+        .catch(err => {
+            console.error("Error fetching data:", err);
+            const errorMessage = (err && err.message) ? err.message : String(err);
+            resetDisplay(false, `FETCH FAILED. Error: ${errorMessage}.`); // Show no data card on error
+        });
+}
 
         // ===== Auto-select Today's Date and Load Data (Unchanged) =====
         function setTodayAndLoadData() {
