@@ -686,7 +686,12 @@
                         <th>Total Revenue</th>
                         <td id="revenue"></td>
                     </tr>
-                </table>              
+                </table>        
+                <div id="shareButtons" style="display: flex; margin-top: 15px; justify-content: center;">
+                    <button id="copyStatementButton" style="display: none;">
+                        <i class="fas fa-copy"></i> Copy Statement
+                    </button>
+                </div>
             </div>
         </div>
         <div>
@@ -761,18 +766,26 @@
             // Check if all data is zero
             const isNoData = num1 === 0 && num2 === 0 && num3 === 0;
 
-            if (isNoData) {
-                // If all counts are 0, hide the table and show the card
-                resultTable.style.display = "none";
-                noDataCard.style.display = "flex"; // Use flex to center content
-                console.log(`No data found for ${selectedDate}. Displaying 'No Data' card.`);
-                return; // Stop execution, no need for calculations
-            }
+            const resultTable = document.getElementById("resultTable");
+            const noDataCard = document.getElementById("noDataCard");
+            const copyButton = document.getElementById("copyStatementButton"); // Get the button
 
-            // If there is data, show the table and hide the card
-            resultTable.style.display = "table";
-            noDataCard.style.display = "none";
+            // Check if all data is zero
+            const isNoData = num1 === 0 && num2 === 0 && num3 === 0;
 
+            if (isNoData) {
+                // If all counts are 0, hide the table and show the card
+                resultTable.style.display = "none";
+                noDataCard.style.display = "flex"; // Use flex to center content
+                copyButton.style.display = "none"; // *** HIDE THE BUTTON ***
+                console.log(`No data found for ${selectedDate}. Displaying 'No Data' card.`);
+                return; // Stop execution, no need for calculations
+            }
+
+            // If there is data, show the table and hide the card
+            resultTable.style.display = "table";
+            noDataCard.style.display = "none";
+            copyButton.style.display = "inline-block"; // *** SHOW THE BUTTON ***
 
             // --- Define Fee and Rate Constants ---
             const SMALL_TRUCK_RATE = 73.17;
@@ -823,6 +836,19 @@
             document.getElementById("totaltruck").innerText = totalTruckText;
             document.getElementById("entryfee").innerText = `${formattedSmall} + ${formattedBig} = ${formattedEntryfee}/-`;
         }
+
+        // ===== NEW FUNCTION: Copy Statement to Clipboard =====
+        function copyStatement(num1, num2, num3, formattedRevenue, totalTruck) {
+            const statement = `Trucks: ${num1} Small + ${num2} Big = ${totalTruck}, Haltage Days = ${num3}, Total Revenue: ${formattedRevenue}/-`;
+
+            navigator.clipboard.writeText(statement)
+                .then(() => {
+                    showCustomMessage("Statement copied to clipboard successfully!", 'success');
+                })
+                .catch(err => {
+                    showCustomMessage("Failed to copy statement. Error: " + err, 'error');
+                });
+        }
 
 
         // ===== Date Change/Load Logic (Refactored) =====
