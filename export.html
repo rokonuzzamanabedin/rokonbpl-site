@@ -5,17 +5,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Content-Security-Policy"
-      content="
-        default-src 'self' https: data: blob:;
-        img-src 'self' https: data:;
-        script-src 'self' 'unsafe-inline';
-        style-src 'self' 'unsafe-inline';
-        connect-src 'self' https: data:;
-        font-src 'self' https: data:;
-        media-src 'self' https: data:;
-        object-src 'none';
-        frame-ancestors 'none';
-      ">
+        content="
+             default-src 'self' https: data: blob:;
+             img-src 'self' https: data:;
+             script-src 'self' 'unsafe-inline';
+             style-src 'self' 'unsafe-inline';
+             connect-src 'self' https: data:;
+             font-src 'self' https: data:;000000000
+             media-src 'self' https: data:;
+             object-src 'none';
+             frame-ancestors 'none';
+             ">
 
 
     <title>Daily Statement</title>
@@ -838,6 +838,39 @@
         color: #333;
         pointer-events: none;
     }
+
+    /* --- NEW CSS for No Data Card --- */
+    #noDataCard {
+        margin-top: 15px;
+        /* Matches table margin-top */
+        width: 100%;
+        /* Same width as table/container */
+        padding: 30px 10px;
+        /* Generous padding to create the card look */
+        border: 1px solid #ddd;
+        /* Soft border */
+        border-radius: 8px;
+        /* Rounded corners */
+        background-color: #ffe0e0;
+        /* Light red background */
+        color: #c00;
+        /* Dark red text */
+        font-weight: bold;
+        font-size: 1.1rem;
+        display: none;
+        /* Initially hidden */
+        min-height: 250px;
+        /* Give it a minimum height to be similar to the table's total height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    #noDataCard i {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
 </style>
 
 <body>
@@ -866,8 +899,7 @@
             </div>
 
             <div class="container fade-in-left" id="fadeDiv">
-                <img src="blpa_logo.png" class="logo" alt="logo" id="logo"
-                    onclick="toggleRotation()" />
+                <img src="blpa_logo.png" class="logo" alt="logo" id="logo" onclick="toggleRotation()" />
 
                 <div class="container-content">
                     <h1>Akhaura Land Port</h1>
@@ -875,6 +907,11 @@
 
                     <p id="dateTime"></p>
 
+                </div>
+
+                <div id="noDataCard">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    No Data Submitted Today
                 </div>
 
                 <table id="resultTable" style="display: none">
@@ -928,14 +965,14 @@
 
 
     <script>
-        // --- Utility Functions (Unchanged) ---       
-
+        // --- Utility Functions (Unchanged) ---
         function formatDateTime() {
             const now = new Date();
 
             const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
 
             const dayName = days[now.getDay()];
             const day = String(now.getDate()).padStart(2, "0");
@@ -973,8 +1010,27 @@
             document.getElementById("fadeDiv").classList.add("show");
         });
 
-        // ===== REUSABLE FUNCTION: Calculate and Display Results (simplified) =====
-        function calculateAndDisplayResults(num1, num2, num3, finalDateTime) {
+        // ===== REUSABLE FUNCTION: Calculate and Display Results (MODIFIED for conditional visibility) =====
+        function calculateAndDisplayResults(num1, num2, num3, selectedDate) {
+            const resultTable = document.getElementById("resultTable");
+            const noDataCard = document.getElementById("noDataCard");
+
+            // Check if all data is zero
+            const isNoData = num1 === 0 && num2 === 0 && num3 === 0;
+
+            if (isNoData) {
+                // If all counts are 0, hide the table and show the card
+                resultTable.style.display = "none";
+                noDataCard.style.display = "flex"; // Use flex to center content
+                console.log(`No data found for ${selectedDate}. Displaying 'No Data' card.`);
+                return; // Stop execution, no need for calculations
+            }
+
+            // If there is data, show the table and hide the card
+            resultTable.style.display = "table";
+            noDataCard.style.display = "none";
+
+
             // --- Define Fee and Rate Constants ---
             const SMALL_TRUCK_RATE = 73.17;
             const BIG_TRUCK_RATE = 146.27;
@@ -1001,7 +1057,6 @@
             const formattedRevenue = roundUpToTwoDecimalPlaces(formattedPortcharge + formattedVat);
 
             // --- Display Results ---
-            document.getElementById("resultTable").style.display = "table";
             document.getElementById("weightfee").innerText = `${formattedWeightfee}/-`;
             document.getElementById("portcharge").innerText = `${formattedPortcharge}/-`;
             document.getElementById("vat").innerText = `${formattedVat}/-`;
@@ -1027,17 +1082,17 @@
         }
 
 
-        // ===== Date Change/Load Logic (Refactored to be a separate, reusable function) =====
+        // ===== Date Change/Load Logic (Refactored) =====
         function loadDataForDate(selectedDate) {
+            const noDataCard = document.getElementById("noDataCard");
             const resultTable = document.getElementById("resultTable");
 
-            const resetForm = (message) => {
-                resultTable.style.display = "none";
-                if (message) showCustomMessage(message, 'info');
-            };
+            // Reset visibility to default (hide both before fetching)
+            resultTable.style.display = "none";
+            noDataCard.style.display = "none";
+
 
             if (!selectedDate) {
-                resetForm();
                 return;
             }
 
@@ -1055,6 +1110,7 @@
                     return res.json();
                 })
                 .then(response => {
+                    // Check for general success AND presence of data object
                     if (response.success && response.data) {
                         const data = response.data;
 
@@ -1064,32 +1120,36 @@
                         const num3 = parseInt(data.holtage_days) || 0;
 
                         // Use the current date/time for calculation
+                        // Note: finalDateTime is only used for console logging in the function now.
                         const finalDateTime = `${selectedDate} 00:00:00`;
 
+                        // 2. Call the modified display function
                         calculateAndDisplayResults(
                             num1,
                             num2,
                             num3,
-                            finalDateTime
+                            selectedDate
                         );
-                        console.log("Data loaded for date:", selectedDate);
+                        console.log("Data processing complete for date:", selectedDate);
+
                     } else {
-                        // No entry found in DB or error
-                        resetForm(`No data found for ${selectedDate}. Showing default 0s.`);
-                        // Manually calculate and display 0s
-                        calculateAndDisplayResults(0, 0, 0, `${selectedDate} 00:00:00`);
+                        // Response success:true, but data is empty/null, OR success:false.
+                        // Treat as no data submitted (0, 0, 0)
+                        calculateAndDisplayResults(0, 0, 0, selectedDate);
                     }
                 })
                 .catch(err => {
+                    // Fetch failed (network error, parsing error, etc.)
                     console.error("Error fetching data:", err);
                     const errorMessage = (err && err.message) ? err.message : String(err);
-                    resetForm(`FETCH FAILED. Error: ${errorMessage}. Showing default 0s.`);
-                    // Manually calculate and display 0s
-                    calculateAndDisplayResults(0, 0, 0, `${selectedDate} 00:00:00`);
+                    showCustomMessage(`FETCH FAILED. Error: ${errorMessage}. Showing No Data Card.`, 'error');
+
+                    // Manually trigger the 'No Data' state
+                    calculateAndDisplayResults(0, 0, 0, selectedDate);
                 });
         }
 
-        // ===== Auto-select Today's Date and Load Data (New Feature) =====
+        // ===== Auto-select Today's Date and Load Data (Unchanged) =====
         function setTodayAndLoadData() {
             const today = new Date();
             const year = today.getFullYear();
@@ -1103,10 +1163,6 @@
 
         // Call this function when the window finishes loading
         window.addEventListener("load", setTodayAndLoadData);
-
-
-
-
     </script>
 </body>
 
