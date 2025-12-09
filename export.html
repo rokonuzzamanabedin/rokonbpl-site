@@ -822,6 +822,27 @@ requestAnimationFrame(() => {
             return Math.round(num * 100) / 100;
         }
 
+        // ===== NEW FUNCTION: Copy Statement to Clipboard =====
+        function copyStatement(num1, num2, num3, formattedRevenue, totalTruck) {
+            // Statement format: Trucks: 10 Small + 5 Big = 15, Haltage Days = 2, Total Revenue: 5000/-
+            const statement = `Trucks: ${num1} Small + ${num2} Big = ${totalTruck}, Haltage Days = ${num3}, Total Revenue: ${formattedRevenue}/-`;
+
+            // Use execCommand('copy') as navigator.clipboard might fail in iFrames
+            const tempInput = document.createElement('textarea');
+            tempInput.value = statement;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand('copy');
+                showCustomMessage("Statement copied to clipboard successfully!", 'success');
+            } catch (err) {
+                showCustomMessage("Failed to copy statement. Error: " + err, 'error');
+            } finally {
+                document.body.removeChild(tempInput);
+            }
+        }
+
         function calculateAndDisplayResults(num1, num2, num3, selectedDate) {
     const resultTable = document.getElementById("resultTable");
     const noDataCard = document.getElementById("noDataCard");
@@ -884,6 +905,11 @@ requestAnimationFrame(() => {
         animateNumber("vat", formattedVat, 1200, "/-");
         animateNumber("revenue", formattedRevenue, 1200, "/-");
     });
+
+    // Attach the new copy logic
+            copyButton.onclick = function() {
+                copyStatement(num1, num2, num3, formattedRevenue, totalTruck);
+            };
 }
 
 
