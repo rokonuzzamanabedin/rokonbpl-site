@@ -674,11 +674,20 @@
                 <table id="resultTable" style="display: none">
                     <tr>
                         <th>Total Trucks</th>
-                        <td id="totaltruck" style="text-align: center"></td>
+                        <td id="totaltruck" style="text-align: center">
+                            <span id="smallTruck">0</span> Small + 
+                            <span id="bigTruck">0</span> Big = 
+                            <span id="totalTruckValue">0</span> Trucks
+                        </td>
                     </tr>
+
                     <tr>
                         <th>Entry Fees</th>
-                        <td id="entryfee"></td>
+                        <td id="entryfee" style="text-align: center">
+                            <span id="entrySmall">0</span> + 
+                            <span id="entryBig">0</span> = 
+                            <span id="entryTotal">0</span>/-
+                        </td>
                     </tr>
                     <tr id="haltageRow">
                         <th>Haltage Fees</th>
@@ -727,42 +736,29 @@
 
 
     <script>
-        // --- Utility Functions ---
+        // ===== Date/Time Display =====
         function formatDateTime() {
             const now = new Date();
-
             const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
             ];
-
             const dayName = days[now.getDay()];
             const day = String(now.getDate()).padStart(2, "0");
             const month = months[now.getMonth()];
             const year = now.getFullYear();
-
             let hours = now.getHours();
             const minutes = String(now.getMinutes()).padStart(2, "0");
             const seconds = String(now.getSeconds()).padStart(2, "0");
-
             const ampm = hours >= 12 ? "PM" : "AM";
-            hours = hours % 12 || 12; // Convert to 12-hour format
-
+            hours = hours % 12 || 12;
             return `${dayName} ${day} ${month} ${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
         }
 
-        // Display current date/time on load
         document.getElementById("dateTime").innerText = formatDateTime();
-
-        // Live update every second:
         setInterval(() => {
             document.getElementById("dateTime").innerText = formatDateTime();
         }, 1000);
-
-        // ===== Utility Function: Round Up to Two Decimal Places =====
-        function roundUpToTwoDecimalPlaces(number) {
-            return Math.round(number * 100) / 100;
-        }
 
         function toggleRotation() {
             document.getElementById("logo").classList.toggle("rotate");
@@ -772,91 +768,73 @@
             document.getElementById("fadeDiv").classList.add("show");
         });
 
-        // ===== NEW FUNCTION: Copy Statement to Clipboard =====
-        function copyStatement(num1, num2, num3, formattedRevenue, totalTruck) {
-            // Statement format: Trucks: 10 Small + 5 Big = 15, Haltage Days = 2, Total Revenue: 5000/-
-            const statement = `Trucks: ${num1} Small + ${num2} Big = ${totalTruck}, Haltage Days = ${num3}, Total Revenue: ${formattedRevenue}/-`;
-
-            // Use execCommand('copy') as navigator.clipboard might fail in iFrames
-            const tempInput = document.createElement('textarea');
-            tempInput.value = statement;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            
-            try {
-                document.execCommand('copy');
-                showCustomMessage("Statement copied to clipboard successfully!", 'success');
-            } catch (err) {
-                showCustomMessage("Failed to copy statement. Error: " + err, 'error');
-            } finally {
-                document.body.removeChild(tempInput);
+        // ===== Animate Numbers =====
+        function animateNumber(elementId, targetValue, duration = 1000, suffix = '') {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            const startTime = performance.now();
+            function updateNumber(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const currentValue = Math.floor(progress * targetValue);
+                element.innerText = currentValue + suffix;
+                if (progress < 1) requestAnimationFrame(updateNumber);
+                else element.innerText = targetValue + suffix;
             }
+            requestAnimationFrame(updateNumber);
         }
 
+        function animateTableRows() {
+            const rows = document.querySelectorAll("#resultTable tr");
+            rows.forEach((row, index) => {
+                setTimeout(() => row.classList.add("show"), index * 150);
+            });
+        }
 
-        // ===== REUSABLE FUNCTION: Calculate and Display Results =====
+        function roundUpTwo(num) {
+            return Math.round(num * 100) / 100;
+        }
+
         function calculateAndDisplayResults(num1, num2, num3, selectedDate) {
-            // Get DOM elements once
             const resultTable = document.getElementById("resultTable");
             const noDataCard = document.getElementById("noDataCard");
-            const copyButton = document.getElementById("copyStatementButton"); // Get the button
+            const copyButton = document.getElementById("copyStatementButton");
 
-            // Check if all data is zero
             const isNoData = num1 === 0 && num2 === 0 && num3 === 0;
 
             if (isNoData) {
-                // If all counts are 0, hide the table/button and show the card
                 resultTable.style.display = "none";
-                noDataCard.style.display = "flex"; // Use flex to center content
+                noDataCard.style.display = "flex";
                 copyButton.style.display = "none";
-                console.log(`No data found for ${selectedDate}. Displaying 'No Data' card.`);
-                return; // Stop execution, no need for calculations
+                return;
             }
 
-            // If there is data, show the table and hide the card
             resultTable.style.display = "table";
             noDataCard.style.display = "none";
             copyButton.style.display = "inline-block";
 
-            // --- Define Fee and Rate Constants ---
             const SMALL_TRUCK_RATE = 73.17;
             const BIG_TRUCK_RATE = 146.27;
             const HOLTAGE_DAY_RATE = 190.17;
             const WEIGHT_CHARGE_RATE = 146.34;
             const VAT_RATE = 0.15;
-            // ------------------------------------
 
             const totalTruck = num1 + num2;
-
-            // Calculations using variables
-            const formattedSmall = roundUpToTwoDecimalPlaces(num1 * SMALL_TRUCK_RATE);
-            const formattedBig = roundUpToTwoDecimalPlaces(num2 * BIG_TRUCK_RATE);
-
-            const formattedEntryfee = roundUpToTwoDecimalPlaces(formattedSmall + formattedBig);
-            const formattedHoltagefee = roundUpToTwoDecimalPlaces(num3 * HOLTAGE_DAY_RATE);
-            const formattedWeightfee = roundUpToTwoDecimalPlaces(totalTruck * WEIGHT_CHARGE_RATE);
-
-            const formattedPortcharge = roundUpToTwoDecimalPlaces(
-                formattedEntryfee + formattedHoltagefee + formattedWeightfee
-            );
-
-            const formattedVat = roundUpToTwoDecimalPlaces(formattedPortcharge * VAT_RATE);
-            const formattedRevenue = roundUpToTwoDecimalPlaces(formattedPortcharge + formattedVat);
-
-            // --- Display Results ---
-            document.getElementById("weightfee").innerText = `${formattedWeightfee}/-`;
-            document.getElementById("portcharge").innerText = `${formattedPortcharge}/-`;
-            document.getElementById("vat").innerText = `${formattedVat}/-`;
-            document.getElementById("revenue").innerText = `${formattedRevenue}/-`;
+            const formattedSmall = roundUpTwo(num1 * SMALL_TRUCK_RATE);
+            const formattedBig = roundUpTwo(num2 * BIG_TRUCK_RATE);
+            const formattedEntryfee = roundUpTwo(formattedSmall + formattedBig);
+            const formattedHoltagefee = roundUpTwo(num3 * HOLTAGE_DAY_RATE);
+            const formattedWeightfee = roundUpTwo(totalTruck * WEIGHT_CHARGE_RATE);
+            const formattedPortcharge = roundUpTwo(formattedEntryfee + formattedHoltagefee + formattedWeightfee);
+            const formattedVat = roundUpTwo(formattedPortcharge * VAT_RATE);
+            const formattedRevenue = roundUpTwo(formattedPortcharge + formattedVat);
 
             if (num3 === 0) {
                 document.getElementById("haltageRow").style.display = "none";
             } else {
                 document.getElementById("haltageRow").style.display = "table-row";
-                document.getElementById("haltagefee").innerText = `${formattedHoltagefee}/-`;
             }
 
-            // Display Total Trucks
             let totalTruckText;
             if (num1 === 0 && num2 <= 1) totalTruckText = `${num2} Big Truck`;
             else if (num1 === 0 && num2 > 1) totalTruckText = `${num2} Big Trucks`;
@@ -864,95 +842,105 @@
             else if (num2 === 0 && num1 > 1) totalTruckText = `${num1} Small Trucks`;
             else totalTruckText = `${num1} Small + ${num2} Big = ${totalTruck} Trucks`;
 
-            document.getElementById("totaltruck").innerText = totalTruckText;
-            document.getElementById("entryfee").innerText = `${formattedSmall}+${formattedBig}=${formattedEntryfee}/-`;
+            // Animate Total Trucks individually
+            animateNumber("smallTruck", num1, 1200);
+            animateNumber("bigTruck", num2, 1200);
+            animateNumber("totalTruckValue", num1 + num2, 1200);
 
-            // Attach the new copy logic
-            copyButton.onclick = function() {
-                copyStatement(num1, num2, num3, formattedRevenue, totalTruck);
+            // Animate numbers for Entry Fees
+            animateNumber("entrySmall", formattedSmall, 1200);
+            animateNumber("entryBig", formattedBig, 1200);
+            animateNumber("entryTotal", formattedEntryfee, 1200);
+
+            // Animate other fees as usual
+            if (num3 !== 0) animateNumber("haltagefee", formattedHoltagefee, 1200, "/-");
+            animateNumber("weightfee", formattedWeightfee, 1200, "/-");
+            animateNumber("portcharge", formattedPortcharge, 1200, "/-");
+            animateNumber("vat", formattedVat, 1200, "/-");
+            animateNumber("revenue", formattedRevenue, 1200, "/-");
+
+            animateTableRows();
+
+            copyButton.onclick = function () {
+                const statement = `Trucks: ${num1} Small + ${num2} Big = ${totalTruck}, Haltage Days = ${num3}, Total Revenue: ${formattedRevenue}/-`;
+                const tempInput = document.createElement('textarea');
+                tempInput.value = statement;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                try { document.execCommand('copy'); alert('Statement copied!'); } catch (err) { alert('Copy failed!'); }
+                finally { document.body.removeChild(tempInput); }
             };
         }
 
-        // ===== Date Change/Load Logic (Refactored) =====
         function loadDataForDate(selectedDate) {
-        const resultTable = document.getElementById("resultTable");
-        const noDataCard = document.getElementById("noDataCard");
-        const loadingCard = document.getElementById("loadingCard");
-        const copyButton = document.getElementById("copyStatementButton");
+            const resultTable = document.getElementById("resultTable");
+            const noDataCard = document.getElementById("noDataCard");
+            const loadingCard = document.getElementById("loadingCard");
+            const copyButton = document.getElementById("copyStatementButton");
 
-        if (!selectedDate) {
-            noDataCard.style.display = "flex";
-            resultTable.style.display = "none";
-            loadingCard.style.display = "none";
-            copyButton.style.display = "none";
-            return;
-        }
-
-        // --- SHOW LOADING ---
-        loadingCard.style.display = "flex";
-        noDataCard.style.display = "none";
-        resultTable.style.display = "none";
-        copyButton.style.display = "none";
-
-        const fetchUrl = `https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
-
-        fetch(fetchUrl)
-            .then(res => {
-                if (!res.ok) throw new Error(res.status);
-                return res.json();
-            })
-            .then(response => {
-                // Hide loading now that data arrived
-                loadingCard.style.display = "none";
-
-                const dataExists = response.success && response.data && (
-                    parseInt(response.data.small_truck) > 0 ||
-                    parseInt(response.data.big_truck) > 0 ||
-                    parseInt(response.data.holtage_days) > 0
-                );
-
-                if (dataExists) {
-                    const d = response.data;
-                    calculateAndDisplayResults(
-                        parseInt(d.small_truck) || 0,
-                        parseInt(d.big_truck) || 0,
-                        parseInt(d.holtage_days) || 0,
-                        selectedDate + " 00:00:00"
-                    );
-
-                    resultTable.style.display = "table";
-                    copyButton.style.display = "inline-block";
-                    noDataCard.style.display = "none";
-                } else {
-                    noDataCard.style.display = "flex";
-                    resultTable.style.display = "none";
-                    copyButton.style.display = "none";
-                }
-            })
-            .catch(err => {
-                console.error(err);
-
-                loadingCard.style.display = "none";
+            if (!selectedDate) {
                 noDataCard.style.display = "flex";
                 resultTable.style.display = "none";
+                loadingCard.style.display = "none";
                 copyButton.style.display = "none";
-            });
-    }
+                return;
+            }
 
+            loadingCard.style.display = "flex";
+            loadingCard.classList.add("show");
+            noDataCard.style.display = "none";
+            resultTable.style.display = "none";
+            copyButton.style.display = "none";
 
-        // ===== Auto-select Today's Date and Load Data =====
+            const fetchUrl = `https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
+
+            fetch(fetchUrl)
+                .then(res => { if (!res.ok) throw new Error(res.status); return res.json(); })
+                .then(response => {
+                    loadingCard.classList.remove("show");
+                    setTimeout(() => loadingCard.style.display = "none", 500);
+
+                    const dataExists = response.success && response.data && (
+                        parseInt(response.data.small_truck) > 0 ||
+                        parseInt(response.data.big_truck) > 0 ||
+                        parseInt(response.data.holtage_days) > 0
+                    );
+
+                    if (dataExists) {
+                        const d = response.data;
+                        calculateAndDisplayResults(
+                            parseInt(d.small_truck) || 0,
+                            parseInt(d.big_truck) || 0,
+                            parseInt(d.holtage_days) || 0,
+                            selectedDate + " 00:00:00"
+                        );
+                    } else {
+                        noDataCard.style.display = "flex";
+                        noDataCard.classList.add("show");
+                        resultTable.style.display = "none";
+                        copyButton.style.display = "none";
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    loadingCard.classList.remove("show");
+                    setTimeout(() => loadingCard.style.display = "none", 500);
+                    noDataCard.style.display = "flex";
+                    noDataCard.classList.add("show");
+                    resultTable.style.display = "none";
+                    copyButton.style.display = "none";
+                });
+        }
+
         function setTodayAndLoadData() {
             const today = new Date();
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, "0");
             const day = String(today.getDate()).padStart(2, "0");
             const todayDateString = `${year}-${month}-${day}`;
-
-            // Manually trigger the data fetching and calculation logic
             loadDataForDate(todayDateString);
         }
 
-        // Call this function when the window finishes loading
         window.addEventListener("load", setTodayAndLoadData);
     </script>
 </body>
