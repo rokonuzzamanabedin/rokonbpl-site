@@ -643,6 +643,29 @@
 
                 </div>
 
+                <div id="loadingCard" style="
+                    display:none;
+                    background:#d1ecf1;
+                    color:#0c5460;
+                    border:1px solid #bee5eb;
+                    border-radius:10px;
+                    padding:20px;
+                    margin-top:15px;
+                    text-align:center;
+                    font-size:1.2em;
+                    font-weight:bold;
+                    width:100%;
+                    min-height:150px;
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    flex-direction:column;
+                ">
+                    <i class="fas fa-spinner fa-spin" style="font-size:2em;margin-bottom:10px;"></i>
+                    Loading Data…
+                </div>
+
+
                 <div id="noDataCard">
                     <i class="fas fa-exclamation-triangle"></i>
                     No Data Submitted Today
@@ -852,81 +875,70 @@
 
         // ===== Date Change/Load Logic (Refactored) =====
         function loadDataForDate(selectedDate) {
-            const resultTable = document.getElementById("resultTable");
-            const noDataCard = document.getElementById("noDataCard"); // Get the new card
-            const copyButton = document.getElementById("copyStatementButton"); // Get the new button
+        const resultTable = document.getElementById("resultTable");
+        const noDataCard = document.getElementById("noDataCard");
+        const loadingCard = document.getElementById("loadingCard");
+        const copyButton = document.getElementById("copyStatementButton");
 
-            const resetDisplay = (isDataFound, message) => {
-                if (isDataFound) {
-                    resultTable.style.display = "table";
-                    noDataCard.style.display = "none";
-                    copyButton.style.display = "inline-block";
-                } else {
-                    resultTable.style.display = "none";
-                    noDataCard.style.display = "flex"; // Use flex to center content
-                    copyButton.style.display = "none";
-                }
-                if (message) showCustomMessage(message, isDataFound ? 'info' : 'error');
-            };
+        if (!selectedDate) {
+            noDataCard.style.display = "flex";
+            resultTable.style.display = "none";
+            loadingCard.style.display = "none";
+            copyButton.style.display = "none";
+            return;
+        }
 
-            if (!selectedDate) {
-                resetDisplay(false, "No date selected.");
-                return;
-            }
+        // --- SHOW LOADING ---
+        loadingCard.style.display = "flex";
+        noDataCard.style.display = "none";
+        resultTable.style.display = "none";
+        copyButton.style.display = "none";
 
-            // Using the provided worker URL
-            const fetchUrl = `https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
+        const fetchUrl = `https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
 
-            console.log("Attempting to fetch data from URL:", fetchUrl);
-            showCustomMessage("Fetching data for date: " + selectedDate, 'info');
+        fetch(fetchUrl)
+            .then(res => {
+                if (!res.ok) throw new Error(res.status);
+                return res.json();
+            })
+            .then(response => {
+                // Hide loading now that data arrived
+                loadingCard.style.display = "none";
 
-            // --- The Fetch Request ---
-            fetch(fetchUrl)
-                .then(res => {
-                    if (!res.ok) {
-                        // Treat non-200 responses as no data/error
-                        throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
-                    }
-                    return res.json();
-                })
-                .then(response => {
-                    // Check for success and actual data counts
-                    const dataExists = response.success && response.data && (
-                        parseInt(response.data.small_truck) > 0 ||
-                        parseInt(response.data.big_truck) > 0 ||
-                        parseInt(response.data.holtage_days) > 0
+                const dataExists = response.success && response.data && (
+                    parseInt(response.data.small_truck) > 0 ||
+                    parseInt(response.data.big_truck) > 0 ||
+                    parseInt(response.data.holtage_days) > 0
+                );
+
+                if (dataExists) {
+                    const d = response.data;
+                    calculateAndDisplayResults(
+                        parseInt(d.small_truck) || 0,
+                        parseInt(d.big_truck) || 0,
+                        parseInt(d.holtage_days) || 0,
+                        selectedDate + " 00:00:00"
                     );
 
-                    if (dataExists) {
-                        const data = response.data;
+                    resultTable.style.display = "table";
+                    copyButton.style.display = "inline-block";
+                    noDataCard.style.display = "none";
+                } else {
+                    noDataCard.style.display = "flex";
+                    resultTable.style.display = "none";
+                    copyButton.style.display = "none";
+                }
+            })
+            .catch(err => {
+                console.error(err);
 
-                        // 1. Get numbers directly from data
-                        const num1 = parseInt(data.small_truck) || 0;
-                        const num2 = parseInt(data.big_truck) || 0;
-                        const num3 = parseInt(data.holtage_days) || 0;
+                loadingCard.style.display = "none";
+                noDataCard.style.display = "flex";
+                resultTable.style.display = "none";
+                copyButton.style.display = "none";
+            });
+    }
 
-                        // Date for display/logging purposes
-                        const finalDateTime = `${selectedDate} 00:00:00`;
-
-                        calculateAndDisplayResults(
-                            num1,
-                            num2,
-                            num3,
-                            finalDateTime
-                        );
-                        resetDisplay(true, "Data successfully loaded."); // Show table
-                        console.log("Data loaded for date:", selectedDate);
-                    } else {
-                        // No entry found in DB or data is all zero/missing fields
-                        resetDisplay(false, `No transaction data found for ${selectedDate}.`); // Show no data card
-                    }
-                })
-                .catch(err => {
-                    console.error("Error fetching data:", err);
-                    const errorMessage = (err && err.message) ? err.message : String(err);
-                    resetDisplay(false, `FETCH FAILED. Error: ${errorMessage}.`); // Show no data card on error
-                });
-        }
 
         // ===== Auto-select Today's Date and Load Data =====
         function setTodayAndLoadData() {
