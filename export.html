@@ -13,17 +13,20 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <style>
+    /* Reset some default browser styles */
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
     }
 
+    /* Set a background color and font for the body */
     body {
         margin: 0;
         font-family: Arial, sans-serif;
     }
 
+    /* Style the container */
     .container {
         background: rgba(255, 255, 255, 0.15);
         border-radius: 10px;
@@ -40,12 +43,14 @@
         position: relative;
     }
 
+    /* Style the heading */
     h1 {
         margin-bottom: 2px;
         color: #333;
         font-size: 1.5rem;
     }
 
+    /* Style the date and time */
     #dateTime {
         margin-bottom: 10px;
         margin-top: 10px;
@@ -53,13 +58,46 @@
         font-size: 1rem;
     }
 
+    /* Style the input fields (Kept for CSS consistency but they are now removed in HTML) */
+    input {
+        display: block;
+        margin: 10px auto;
+        padding: 10px 15px;
+        width: calc(80% - 30px);
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        text-align: right;
+    }
+
+    /* Style the buttons (Kept for CSS consistency but they are now removed in HTML) */
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        width: calc(100% - 2px);
+        max-width: 200px;
+    }
+
+    button:hover {
+        background-color: #8000ff;
+    }
+
+    /* Style the result table */
     table {
         margin-top: 15px;
         width: 100%;
         border-collapse: collapse;
     }
 
-    table, th, td {
+    table,
+    th,
+    td {
         border: 1px solid #0a0909;
     }
 
@@ -67,7 +105,6 @@
         width: 45%;
         padding: 10px;
         text-align: left;
-        background-color: #f2f2f2;
     }
 
     td {
@@ -76,12 +113,18 @@
         text-align: right;
     }
 
+    th {
+        background-color: #f2f2f2;
+    }
+
+    /* Container for share buttons */
     #shareButtons {
         display: flex;
         justify-content: center;
         margin-top: 20px;
     }
 
+    /* Styling the WhatsApp share button */
     #shareWhatsApp {
         padding: 10px 15px;
         font-size: 0.875rem;
@@ -92,73 +135,454 @@
         align-items: center;
     }
 
+    #shareWhatsApp i {
+        margin-right: 8px;
+    }
+
+    /* WhatsApp share button hover effect */
     #shareWhatsApp:hover {
         background-color: #1ebea5;
     }
 
+    /* Flying bird effect */
     .bird {
         background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/174479/bird-cells-new.svg");
         filter: invert(34%) sepia(55%) saturate(427%) hue-rotate(141deg) brightness(93%) contrast(91%);
         background-size: auto 100%;
         width: 88px;
         height: 125px;
+        will-change: background-position;
         animation-name: fly-cycle;
         animation-timing-function: steps(10);
         animation-iteration-count: infinite;
     }
 
-    .bird-one { animation-duration: 1s; animation-delay: -0.5s; }
-    .bird-two { animation-duration: 0.9s; animation-delay: -0.75s; }
-    .bird-three { animation-duration: 1.25s; animation-delay: -0.25s; }
-    .bird-four { animation-duration: 1.1s; animation-delay: -0.5s; }
+    .bird-one {
+        animation-duration: 1s;
+        animation-delay: -0.5s;
+    }
+
+    .bird-two {
+        animation-duration: 0.9s;
+        animation-delay: -0.75s;
+    }
+
+    .bird-three {
+        animation-duration: 1.25s;
+        animation-delay: -0.25s;
+    }
+
+    .bird-four {
+        animation-duration: 1.1s;
+        animation-delay: -0.5s;
+    }
 
     .bird-container {
         position: absolute;
         top: 10%;
         left: -3%;
         transform: scale(0) translateX(-10vw);
+        will-change: transform;
         animation-name: fly-right-one;
         animation-timing-function: linear;
         animation-iteration-count: infinite;
     }
 
-    .bird-container-one { animation-duration: 15s; }
-    .bird-container-two { animation-duration: 16s; animation-delay: 1s; }
-    .bird-container-three { animation-duration: 14.6s; animation-delay: 9.5s; }
-    .bird-container-four { animation-duration: 16s; animation-delay: 10.25s; }
-
-    @keyframes fly-cycle { 100% { background-position: -900px 0; } }
-
-    @keyframes fly-right-one {
-        0% { transform: scale(0.3) translateX(-10vw); }
-        10% { transform: translateY(2vh) translateX(10vw) scale(0.4); }
-        20% { transform: translateY(0) translateX(30vw) scale(0.5); }
-        30% { transform: translateY(4vh) translateX(50vw) scale(0.6); }
-        40% { transform: translateY(2vh) translateX(70vw) scale(0.6); }
-        50% { transform: translateY(0) translateX(90vw) scale(0.6); }
-        60% { transform: translateY(0) translateX(110vw) scale(0.6); }
-        100% { transform: translateY(0) translateX(110vw) scale(0.6); }
+    .bird-container-one {
+        animation-duration: 15s;
+        animation-delay: 0;
     }
 
+    .bird-container-two {
+        animation-duration: 16s;
+        animation-delay: 1s;
+    }
+
+    .bird-container-three {
+        animation-duration: 14.6s;
+        animation-delay: 9.5s;
+    }
+
+    .bird-container-four {
+        animation-duration: 16s;
+        animation-delay: 10.25s;
+    }
+
+    @keyframes fly-cycle {
+        100% {
+            background-position: -900px 0;
+        }
+    }
+
+    @keyframes fly-right-one {
+        0% {
+            transform: scale(0.3) translateX(-10vw);
+        }
+
+        10% {
+            transform: translateY(2vh) translateX(10vw) scale(0.4);
+        }
+
+        20% {
+            transform: translateY(0vh) translateX(30vw) scale(0.5);
+        }
+
+        30% {
+            transform: translateY(4vh) translateX(50vw) scale(0.6);
+        }
+
+        40% {
+            transform: translateY(2vh) translateX(70vw) scale(0.6);
+        }
+
+        50% {
+            transform: translateY(0vh) translateX(90vw) scale(0.6);
+        }
+
+        60% {
+            transform: translateY(0vh) translateX(110vw) scale(0.6);
+        }
+
+        100% {
+            transform: translateY(0vh) translateX(110vw) scale(0.6);
+        }
+    }
+
+    @keyframes fly-right-two {
+        0% {
+            transform: translateY(-2vh) translateX(-10vw) scale(0.5);
+        }
+
+        10% {
+            transform: translateY(0vh) translateX(10vw) scale(0.4);
+        }
+
+        20% {
+            transform: translateY(-4vh) translateX(30vw) scale(0.6);
+        }
+
+        30% {
+            transform: translateY(1vh) translateX(50vw) scale(0.45);
+        }
+
+        40% {
+            transform: translateY(-2.5vh) translateX(70vw) scale(0.5);
+        }
+
+        50% {
+            transform: translateY(0vh) translateX(90vw) scale(0.45);
+        }
+
+        51% {
+            transform: translateY(0vh) translateX(110vw) scale(0.45);
+        }
+
+        100% {
+            transform: translateY(0vh) translateX(110vw) scale(0.45);
+        }
+    }
+
+    /* Popup */
+    #popup {
+        display: none;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.5);
+        padding: 10px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    /* Placeholder */
+    .input-container {
+        position: relative;
+        width: 200px;
+        margin: auto;
+    }
+
+    .input-container input {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .input-container::before {
+        content: attr(data-placeholder);
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        color: #999;
+        pointer-events: none;
+        transition: all 0.2s;
+        text-align: right;
+    }
+
+    .input-container input:focus::before,
+    .input-container input:not(:placeholder-shown)::before {
+        transform: translateY(-20px);
+        font-size: 0.75rem;
+        color: #666;
+    }
+
+    /* Logo rotate */
+    .logo {
+        display: flex;
+        width: 53px;
+        height: 53px;
+        cursor: pointer;
+    }
+
+    .rotate {
+        animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Waves */
     .header {
         position: relative;
         text-align: center;
-        background: linear-gradient(109.6deg, rgba(156, 252, 248, 1) 11.2%, rgba(110, 123, 251, 1) 91.1%);
+        background: linear-gradient(109.6deg,
+                rgba(156, 252, 248, 1) 11.2%,
+                rgba(110, 123, 251, 1) 91.1%);
     }
 
     .inner-header {
         height: 83vh;
         width: 100%;
+        margin: 0;
+        padding: 0;
         position: relative;
     }
 
-    #fadeDiv { opacity: 0; transform: translateX(-200px); transition: 1s; }
-    #fadeDiv.show { opacity: 1; transform: translateX(0); }
+    .flex {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
 
+    .waves {
+        position: relative;
+        width: 100%;
+        height: 15vh;
+        margin-bottom: -7px;
+        min-height: 100px;
+        max-height: 150px;
+    }
+
+    .parallax>use {
+        animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+    }
+
+    .parallax>use:nth-child(1) {
+        animation-delay: -2s;
+        animation-duration: 7s;
+    }
+
+    .parallax>use:nth-child(2) {
+        animation-delay: -3s;
+        animation-duration: 10s;
+    }
+
+    .parallax>use:nth-child(3) {
+        animation-delay: -4s;
+        animation-duration: 13s;
+    }
+
+    .parallax>use:nth-child(4) {
+        animation-delay: -5s;
+        animation-duration: 20s;
+    }
+
+    @keyframes move-forever {
+        0% {
+            transform: translate3d(-90px, 0, 0);
+        }
+
+        100% {
+            transform: translate3d(85px, 0, 0);
+        }
+    }
+
+    /* Shrinking for mobile */
+    @media (max-width: 400px) {
+        .waves {
+            height: 40px;
+            min-height: 40px;
+        }
+
+        .content {
+            height: 30vh;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+        }
+
+        #dateTime {
+            font-size: 0.875rem;
+        }
+
+        input {
+            width: calc(90% - 30px);
+        }
+
+        button {
+            width: 100%;
+            max-width: 200px;
+        }
+    }
+
+    .container-content {
+        margin-top: -13%;
+    }
+
+    /* Fullscreen table styles */
+    .fullscreen {
+        position: fixed;
+        margin-top: -0.01%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 1000;
+        font-weight: bold;
+        padding: 10px;
+        font-size: 1.2em;
+    }
+
+    .fullscreen:active {
+        animation-name: jiggle;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+
+    @keyframes jiggle {
+        1% {
+            transform: translate(0px, 0px) rotate(0deg);
+        }
+
+        5% {
+            transform: translate(1px, -1px) rotate(-1deg);
+        }
+
+        10% {
+            transform: translate(2px, -2px) rotate(0deg);
+        }
+
+        15% {
+            transform: translate(3px, -3px) rotate(1deg);
+        }
+
+        20% {
+            transform: translate(2px, -2px) rotate(0deg);
+        }
+
+        25% {
+            transform: translate(1px, -1px) rotate(-1deg);
+        }
+
+        30% {
+            transform: translate(0px, 0px) rotate(0deg);
+        }
+
+        35% {
+            transform: translate(-1px, 1px) rotate(1deg);
+        }
+
+        40% {
+            transform: translate(-2px, 2px) rotate(0deg);
+        }
+
+        45% {
+            transform: translate(-3px, 3px) rotate(-1deg);
+        }
+
+        50% {
+            transform: translate(-2px, 2px) rotate(1deg);
+        }
+
+        55% {
+            transform: translate(-1px, 1px) rotate(1deg);
+        }
+
+        60% {
+            transform: translate(0px, 0px) rotate(0deg);
+        }
+    }
+
+    /* Add glow effect on focus */
+    .input-container input:focus {
+        outline: none;
+        box-shadow: 0 0 10px red;
+    }
+
+    /* Add animation for glowing effect */
+    @keyframes glow {
+        0% {
+            box-shadow: 0 0 10px red;
+        }
+
+        50% {
+            box-shadow: 0 0 15px red;
+        }
+
+        100% {
+            box-shadow: 0 0 10px red;
+        }
+    }
+
+    .input-container input:focus {
+        animation: glow 0.5s infinite alternate;
+    }
+
+    /* Initial hidden position and opacity */
+    .fade-in-left {
+        opacity: 0;
+        transform: translateX(-200px);
+        transition: opacity 1s ease, transform 1s ease;
+    }
+
+    /* Triggered class for animation */
+    .fade-in-left.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+
+    .bird-container,
+    .bird-container-one,
+    .bird-container-two,
+    .bird-container-three,
+    .bird-container-four {
+        z-index: 1;
+    }
+
+
+    /* New style for the "No Data" card */
     #noDataCard {
         display: none;
+        /* Initially hidden */
         background-color: #f8d7da;
+        /* Light red/pink background for alert feel */
+
         color: #721c24;
+        /* Dark red text */
         border: 1px solid #f5c6cb;
         border-radius: 10px;
         padding: 20px;
@@ -166,6 +590,9 @@
         text-align: center;
         font-size: 1.2em;
         font-weight: bold;
+        /* Ensure it has the same width characteristics as the table */
+        width: 100%;
+        /* Min height to simulate table size */
         min-height: 150px;
         display: flex;
         justify-content: center;
@@ -173,234 +600,361 @@
         flex-direction: column;
     }
 
-    #noDataCard i { font-size: 2em; margin-bottom: 10px; }
+    #noDataCard i {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
 </style>
 
 <body>
+    <script>
+        // Custom message function (Placeholder for popups)
+        function showCustomMessage(msg, type = 'error') {
+            // For a display-only report, we use console logging for messages that would otherwise appear in a toast/popup.
+            console.log(`[${type.toUpperCase()}] ${msg}`);
+        }
+    </script>
 
-<script>
-function showCustomMessage(msg, type = 'error') {
-    console.log(`[${type.toUpperCase()}] ${msg}`);
-}
-</script>
 
-<div class="header">
-    <div class="inner-header flex">
+    <div class="header">
+        <div class="inner-header flex">
+            <div class="bird-container bird-container-one">
+                <div class="bird bird-one"></div>
+            </div>
+            <div class="bird-container bird-container-two">
+                <div class="bird bird-two"></div>
+            </div>
+            <div class="bird-container bird-container-three">
+                <div class="bird bird-three"></div>
+            </div>
+            <div class="bird-container bird-container-four">
+                <div class="bird bird-four"></div>
+            </div>
 
-        <!-- MOVED LOADING SPINNER HERE -->
-        <div id="loadingCard" style="
-            display:flex;
-            background:#d1ecf1;
-            color:#0c5460;
-            border:1px solid #bee5eb;
-            border-radius:10px;
-            padding:20px;
-            margin:20px auto;
-            text-align:center;
-            font-size:1.2em;
-            font-weight:bold;
-            width:90%;
-            max-width:400px;
-            min-height:150px;
-            justify-content:center;
-            align-items:center;
-            flex-direction:column;
-            z-index:99999;
-        ">
-            <i class="fas fa-spinner fa-spin" style="font-size:2em;margin-bottom:10px;"></i>
-            Loading Data…
+            <div class="container fade-in-left" id="fadeDiv">
+                <!-- Using a generic placeholder for the logo image -->
+                <img src="blpa_logo.png" class="logo" alt="logo" id="logo" onclick="toggleRotation()" />
+
+                <div class="container-content">
+                    <h1>Akhaura Land Port</h1>
+                    <p>Today's Statement</p>
+
+                    <p id="dateTime"></p>
+
+                </div>
+
+                <div id="loadingCard" style="
+                    display:none;
+                    background:#d1ecf1;
+                    color:#0c5460;
+                    border:1px solid #bee5eb;
+                    border-radius:10px;
+                    padding:20px;
+                    margin-top:15px;
+                    text-align:center;
+                    font-size:1.2em;
+                    font-weight:bold;
+                    width:100%;
+                    min-height:150px;
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    flex-direction:column;
+                ">
+                    <i class="fas fa-spinner fa-spin" style="font-size:2em;margin-bottom:10px;"></i>
+                    Loading Data…
+                </div>
+
+
+                <div id="noDataCard">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    No Data Submitted Today
+                </div>
+
+                <table id="resultTable" style="display: none">
+                    <tr>
+                        <th>Total Trucks</th>
+                        <td id="totaltruck" style="text-align: center"></td>
+                    </tr>
+                    <tr>
+                        <th>Entry Fees</th>
+                        <td id="entryfee"></td>
+                    </tr>
+                    <tr id="haltageRow">
+                        <th>Haltage Fees</th>
+                        <td id="haltagefee"></td>
+                    </tr>
+                    <tr>
+                        <th>Wgt. Charges</th>
+                        <td id="weightfee"></td>
+                    </tr>
+                    <tr>
+                        <th>Port Charges</th>
+                        <td id="portcharge"></td>
+                    </tr>
+                    <tr>
+                        <th>VAT (15%)</th>
+                        <td id="vat"></td>
+                    </tr>
+                    <tr>
+                        <th>Total Revenue</th>
+                        <td id="revenue"></td>
+                    </tr>
+                </table>
+                <div id="shareButtons" style="display: flex; margin-top: 15px; justify-content: center;">
+                    <button id="copyStatementButton" style="display: none;">
+                        <i class="fas fa-copy"></i> Copy Statement
+                    </button>
+                </div>
+            </div>
         </div>
-
-        <!-- Birds -->
-        <div class="bird-container bird-container-one"><div class="bird bird-one"></div></div>
-        <div class="bird-container bird-container-two"><div class="bird bird-two"></div></div>
-        <div class="bird-container bird-container-three"><div class="bird bird-three"></div></div>
-        <div class="bird-container bird-container-four"><div class="bird bird-four"></div></div>
-
-        <div class="container fade-in-left" id="fadeDiv">
-            <img src="blpa_logo.png" class="logo" alt="logo" id="logo" onclick="toggleRotation()" />
-
-            <div class="container-content">
-                <h1>Akhaura Land Port</h1>
-                <p>Today's Statement</p>
-                <p id="dateTime"></p>
-            </div>
-
-            <div id="noDataCard">
-                <i class="fas fa-exclamation-triangle"></i>
-                No Data Submitted Today
-            </div>
-
-            <table id="resultTable" style="display: none">
-                <tr><th>Total Trucks</th><td id="totaltruck" style="text-align:center"></td></tr>
-                <tr><th>Entry Fees</th><td id="entryfee"></td></tr>
-                <tr id="haltageRow"><th>Haltage Fees</th><td id="haltagefee"></td></tr>
-                <tr><th>Wgt. Charges</th><td id="weightfee"></td></tr>
-                <tr><th>Port Charges</th><td id="portcharge"></td></tr>
-                <tr><th>VAT (15%)</th><td id="vat"></td></tr>
-                <tr><th>Total Revenue</th><td id="revenue"></td></tr>
-            </table>
-
-            <div id="shareButtons">
-                <button id="copyStatementButton" style="display:none;">
-                    <i class="fas fa-copy"></i> Copy Statement
-                </button>
-            </div>
+        <div>
+            <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                <defs>
+                    <path id="gentle-wave"
+                        d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                </defs>
+                <g class="parallax">
+                    <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7)" />
+                    <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+                    <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+                    <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
+                </g>
+            </svg>
         </div>
     </div>
 
-    <div>
-        <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none">
-            <defs>
-                <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-            </defs>
-            <g class="parallax">
-                <use href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7)" />
-                <use href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
-                <use href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
-                <use href="#gentle-wave" x="48" y="7" fill="#fff" />
-            </g>
-        </svg>
-    </div>
-</div>
 
-<script>
-function formatDateTime() {
-    const now = new Date();
-    const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const d = `${days[now.getDay()]} ${String(now.getDate()).padStart(2,"0")} ${months[now.getMonth()]} ${now.getFullYear()}`;
-    let h = now.getHours(), m = String(now.getMinutes()).padStart(2,"0"), s = String(now.getSeconds()).padStart(2,"0");
-    const ampm = h>=12?"PM":"AM";
-    h = h%12 || 12;
-    return `${d}, ${h}:${m}:${s} ${ampm}`;
-}
+    <script>
+        // --- Utility Functions ---
+        function formatDateTime() {
+            const now = new Date();
 
-document.getElementById("dateTime").innerText = formatDateTime();
-setInterval(() => {
-    document.getElementById("dateTime").innerText = formatDateTime();
-}, 1000);
+            const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
 
-function toggleRotation() {
-    document.getElementById("logo").classList.toggle("rotate");
-}
+            const dayName = days[now.getDay()];
+            const day = String(now.getDate()).padStart(2, "0");
+            const month = months[now.getMonth()];
+            const year = now.getFullYear();
 
-window.addEventListener("load", () => {
-    document.getElementById("fadeDiv").classList.add("show");
-});
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, "0");
+            const seconds = String(now.getSeconds()).padStart(2, "0");
 
-// Helper
-function roundUpToTwoDecimalPlaces(n){return Math.round(n * 100) / 100;}
+            const ampm = hours >= 12 ? "PM" : "AM";
+            hours = hours % 12 || 12; // Convert to 12-hour format
 
-// Copy
-function copyStatement(num1, num2, num3, formattedRevenue, totalTruck) {
-    const text = `Trucks: ${num1} Small + ${num2} Big = ${totalTruck}, Haltage Days = ${num3}, Total Revenue: ${formattedRevenue}/-`;
-    const t = document.createElement("textarea");
-    t.value = text; document.body.appendChild(t); t.select();
-    try { document.execCommand("copy"); } catch {}
-    document.body.removeChild(t);
-}
+            return `${dayName} ${day} ${month} ${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
+        }
 
-// Calc
-function calculateAndDisplayResults(num1, num2, num3, selectedDate) {
-    const resultTable=document.getElementById("resultTable");
-    const noDataCard=document.getElementById("noDataCard");
-    const copyButton=document.getElementById("copyStatementButton");
+        // Display current date/time on load
+        document.getElementById("dateTime").innerText = formatDateTime();
 
-    const isNoData = (num1===0 && num2===0 && num3===0);
-    if(isNoData){
-        resultTable.style.display="none";
-        noDataCard.style.display="flex";
-        copyButton.style.display="none";
-        return;
-    }
+        // Live update every second:
+        setInterval(() => {
+            document.getElementById("dateTime").innerText = formatDateTime();
+        }, 1000);
 
-    resultTable.style.display="table";
-    noDataCard.style.display="none";
-    copyButton.style.display="inline-block";
+        // ===== Utility Function: Round Up to Two Decimal Places =====
+        function roundUpToTwoDecimalPlaces(number) {
+            return Math.round(number * 100) / 100;
+        }
 
-    const SMALL=73.17, BIG=146.27, HOL=190.17, WGT=146.34, VAT=0.15;
-    const totalTruck=num1+num2;
+        function toggleRotation() {
+            document.getElementById("logo").classList.toggle("rotate");
+        }
 
-    const entry=roundUpToTwoDecimalPlaces(num1*SMALL + num2*BIG);
-    const holtage=roundUpToTwoDecimalPlaces(num3*HOL);
-    const weight=roundUpToTwoDecimalPlaces(totalTruck*WGT);
-    const port=roundUpToTwoDecimalPlaces(entry+holtage+weight);
-    const vatAmt=roundUpToTwoDecimalPlaces(port*VAT);
-    const revenue=roundUpToTwoDecimalPlaces(port+vatAmt);
+        window.addEventListener("load", () => {
+            document.getElementById("fadeDiv").classList.add("show");
+        });
 
-    document.getElementById("weightfee").innerText=`${weight}/-`;
-    document.getElementById("portcharge").innerText=`${port}/-`;
-    document.getElementById("vat").innerText=`${vatAmt}/-`;
-    document.getElementById("revenue").innerText=`${revenue}/-`;
+        // ===== NEW FUNCTION: Copy Statement to Clipboard =====
+        function copyStatement(num1, num2, num3, formattedRevenue, totalTruck) {
+            // Statement format: Trucks: 10 Small + 5 Big = 15, Haltage Days = 2, Total Revenue: 5000/-
+            const statement = `Trucks: ${num1} Small + ${num2} Big = ${totalTruck}, Haltage Days = ${num3}, Total Revenue: ${formattedRevenue}/-`;
 
-    if(num3===0){
-        document.getElementById("haltageRow").style.display="none";
-    } else {
-        document.getElementById("haltageRow").style.display="table-row";
-        document.getElementById("haltagefee").innerText=`${holtage}/-`;
-    }
+            // Use execCommand('copy') as navigator.clipboard might fail in iFrames
+            const tempInput = document.createElement('textarea');
+            tempInput.value = statement;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand('copy');
+                showCustomMessage("Statement copied to clipboard successfully!", 'success');
+            } catch (err) {
+                showCustomMessage("Failed to copy statement. Error: " + err, 'error');
+            } finally {
+                document.body.removeChild(tempInput);
+            }
+        }
 
-    document.getElementById("totaltruck").innerText=
-        num1===0?`${num2} Big Trucks`:
-        num2===0?`${num1} Small Trucks`:
-        `${num1} Small + ${num2} Big = ${totalTruck}`;
 
-    document.getElementById("entryfee").innerText=`${roundUpToTwoDecimalPlaces(num1*SMALL)}+${roundUpToTwoDecimalPlaces(num2*BIG)}=${entry}/-`;
+        // ===== REUSABLE FUNCTION: Calculate and Display Results =====
+        function calculateAndDisplayResults(num1, num2, num3, selectedDate) {
+            // Get DOM elements once
+            const resultTable = document.getElementById("resultTable");
+            const noDataCard = document.getElementById("noDataCard");
+            const copyButton = document.getElementById("copyStatementButton"); // Get the button
 
-    copyButton.onclick = ()=>copyStatement(num1,num2,num3,revenue,totalTruck);
-}
+            // Check if all data is zero
+            const isNoData = num1 === 0 && num2 === 0 && num3 === 0;
 
-// Fetch + loading
-function loadDataForDate(selectedDate){
-    const resultTable=document.getElementById("resultTable");
-    const noDataCard=document.getElementById("noDataCard");
-    const loadingCard=document.getElementById("loadingCard");
-    const copyButton=document.getElementById("copyStatementButton");
+            if (isNoData) {
+                // If all counts are 0, hide the table/button and show the card
+                resultTable.style.display = "none";
+                noDataCard.style.display = "flex"; // Use flex to center content
+                copyButton.style.display = "none";
+                console.log(`No data found for ${selectedDate}. Displaying 'No Data' card.`);
+                return; // Stop execution, no need for calculations
+            }
 
-    loadingCard.style.display="flex";
-    noDataCard.style.display="none";
-    resultTable.style.display="none";
-    copyButton.style.display="none";
+            // If there is data, show the table and hide the card
+            resultTable.style.display = "table";
+            noDataCard.style.display = "none";
+            copyButton.style.display = "inline-block";
 
-    const url=`https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
+            // --- Define Fee and Rate Constants ---
+            const SMALL_TRUCK_RATE = 73.17;
+            const BIG_TRUCK_RATE = 146.27;
+            const HOLTAGE_DAY_RATE = 190.17;
+            const WEIGHT_CHARGE_RATE = 146.34;
+            const VAT_RATE = 0.15;
+            // ------------------------------------
 
-    fetch(url)
-        .then(r=>r.json())
-        .then(response=>{
-            loadingCard.style.display="none";
+            const totalTruck = num1 + num2;
 
-            const d=response.data;
-            const exists = response.success && d && 
-                (parseInt(d.small_truck)>0 || parseInt(d.big_truck)>0 || parseInt(d.holtage_days)>0);
+            // Calculations using variables
+            const formattedSmall = roundUpToTwoDecimalPlaces(num1 * SMALL_TRUCK_RATE);
+            const formattedBig = roundUpToTwoDecimalPlaces(num2 * BIG_TRUCK_RATE);
 
-            if(exists){
-                calculateAndDisplayResults(
-                    parseInt(d.small_truck)||0,
-                    parseInt(d.big_truck)||0,
-                    parseInt(d.holtage_days)||0,
-                    selectedDate+" 00:00:00"
+            const formattedEntryfee = roundUpToTwoDecimalPlaces(formattedSmall + formattedBig);
+            const formattedHoltagefee = roundUpToTwoDecimalPlaces(num3 * HOLTAGE_DAY_RATE);
+            const formattedWeightfee = roundUpToTwoDecimalPlaces(totalTruck * WEIGHT_CHARGE_RATE);
+
+            const formattedPortcharge = roundUpToTwoDecimalPlaces(
+                formattedEntryfee + formattedHoltagefee + formattedWeightfee
+            );
+
+            const formattedVat = roundUpToTwoDecimalPlaces(formattedPortcharge * VAT_RATE);
+            const formattedRevenue = roundUpToTwoDecimalPlaces(formattedPortcharge + formattedVat);
+
+            // --- Display Results ---
+            document.getElementById("weightfee").innerText = `${formattedWeightfee}/-`;
+            document.getElementById("portcharge").innerText = `${formattedPortcharge}/-`;
+            document.getElementById("vat").innerText = `${formattedVat}/-`;
+            document.getElementById("revenue").innerText = `${formattedRevenue}/-`;
+
+            if (num3 === 0) {
+                document.getElementById("haltageRow").style.display = "none";
+            } else {
+                document.getElementById("haltageRow").style.display = "table-row";
+                document.getElementById("haltagefee").innerText = `${formattedHoltagefee}/-`;
+            }
+
+            // Display Total Trucks
+            let totalTruckText;
+            if (num1 === 0 && num2 <= 1) totalTruckText = `${num2} Big Truck`;
+            else if (num1 === 0 && num2 > 1) totalTruckText = `${num2} Big Trucks`;
+            else if (num2 === 0 && num1 <= 1) totalTruckText = `${num1} Small Truck`;
+            else if (num2 === 0 && num1 > 1) totalTruckText = `${num1} Small Trucks`;
+            else totalTruckText = `${num1} Small + ${num2} Big = ${totalTruck} Trucks`;
+
+            document.getElementById("totaltruck").innerText = totalTruckText;
+            document.getElementById("entryfee").innerText = `${formattedSmall}+${formattedBig}=${formattedEntryfee}/-`;
+
+            // Attach the new copy logic
+            copyButton.onclick = function() {
+                copyStatement(num1, num2, num3, formattedRevenue, totalTruck);
+            };
+        }
+
+        // ===== Date Change/Load Logic (Refactored) =====
+        function loadDataForDate(selectedDate) {
+        const resultTable = document.getElementById("resultTable");
+        const noDataCard = document.getElementById("noDataCard");
+        const loadingCard = document.getElementById("loadingCard");
+        const copyButton = document.getElementById("copyStatementButton");
+
+        if (!selectedDate) {
+            noDataCard.style.display = "flex";
+            resultTable.style.display = "none";
+            loadingCard.style.display = "none";
+            copyButton.style.display = "none";
+            return;
+        }
+
+        // --- SHOW LOADING ---
+        loadingCard.style.display = "flex";
+        noDataCard.style.display = "none";
+        resultTable.style.display = "none";
+        copyButton.style.display = "none";
+
+        const fetchUrl = `https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
+
+        fetch(fetchUrl)
+            .then(res => {
+                if (!res.ok) throw new Error(res.status);
+                return res.json();
+            })
+            .then(response => {
+                // Hide loading now that data arrived
+                loadingCard.style.display = "none";
+
+                const dataExists = response.success && response.data && (
+                    parseInt(response.data.small_truck) > 0 ||
+                    parseInt(response.data.big_truck) > 0 ||
+                    parseInt(response.data.holtage_days) > 0
                 );
 
-                resultTable.style.display="table";
-                copyButton.style.display="inline-block";
-            } else {
-                noDataCard.style.display="flex";
-            }
-        })
-        .catch(()=>{
-            loadingCard.style.display="none";
-            noDataCard.style.display="flex";
-        });
-}
+                if (dataExists) {
+                    const d = response.data;
+                    calculateAndDisplayResults(
+                        parseInt(d.small_truck) || 0,
+                        parseInt(d.big_truck) || 0,
+                        parseInt(d.holtage_days) || 0,
+                        selectedDate + " 00:00:00"
+                    );
 
-// Auto load today
-window.addEventListener("load", ()=>{
-    const t=new Date();
-    const d=`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`;
-    loadDataForDate(d);
-});
-</script>
+                    resultTable.style.display = "table";
+                    copyButton.style.display = "inline-block";
+                    noDataCard.style.display = "none";
+                } else {
+                    noDataCard.style.display = "flex";
+                    resultTable.style.display = "none";
+                    copyButton.style.display = "none";
+                }
+            })
+            .catch(err => {
+                console.error(err);
 
+                loadingCard.style.display = "none";
+                noDataCard.style.display = "flex";
+                resultTable.style.display = "none";
+                copyButton.style.display = "none";
+            });
+    }
+
+
+        // ===== Auto-select Today's Date and Load Data =====
+        function setTodayAndLoadData() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, "0");
+            const day = String(today.getDate()).padStart(2, "0");
+            const todayDateString = `${year}-${month}-${day}`;
+
+            // Manually trigger the data fetching and calculation logic
+            loadDataForDate(todayDateString);
+        }
+
+        // Call this function when the window finishes loading
+        window.addEventListener("load", setTodayAndLoadData);
+    </script>
 </body>
+
 </html>
