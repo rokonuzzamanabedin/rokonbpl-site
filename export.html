@@ -604,6 +604,14 @@
         font-size: 2em;
         margin-bottom: 10px;
     }
+
+    #resultTable td {
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+#resultTable.show td {
+    opacity: 1;
+}
 </style>
 
 <body>
@@ -689,6 +697,7 @@
                             <span id="entryTotal">0</span>/-
                         </td>
                     </tr>
+
                     <tr id="haltageRow">
                         <th>Haltage Fees</th>
                         <td id="haltagefee"></td>
@@ -736,6 +745,24 @@
 
 
     <script>
+        function resetTableValues() {
+    const ids = [
+        "smallTruck", "bigTruck", "totalTruckValue",
+        "entrySmall", "entryBig", "entryTotal",
+        "haltagefee", "weightfee", "portcharge", "vat", "revenue"
+    ];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = 0;
+    });
+}
+
+resultTable.classList.remove("show");
+requestAnimationFrame(() => {
+    resultTable.classList.add("show");
+});
+
+
         // ===== Date/Time Display =====
         function formatDateTime() {
             const now = new Date();
@@ -796,81 +823,70 @@
         }
 
         function calculateAndDisplayResults(num1, num2, num3, selectedDate) {
-            const resultTable = document.getElementById("resultTable");
-            const noDataCard = document.getElementById("noDataCard");
-            const copyButton = document.getElementById("copyStatementButton");
+    const resultTable = document.getElementById("resultTable");
+    const noDataCard = document.getElementById("noDataCard");
+    const copyButton = document.getElementById("copyStatementButton");
 
-            const isNoData = num1 === 0 && num2 === 0 && num3 === 0;
+    const isNoData = num1 === 0 && num2 === 0 && num3 === 0;
 
-            if (isNoData) {
-                resultTable.style.display = "none";
-                noDataCard.style.display = "flex";
-                copyButton.style.display = "none";
-                return;
-            }
+    if (isNoData) {
+        resultTable.style.display = "none";
+        noDataCard.style.display = "flex";
+        copyButton.style.display = "none";
+        return;
+    }
 
-            resultTable.style.display = "table";
-            noDataCard.style.display = "none";
-            copyButton.style.display = "inline-block";
+    resultTable.style.display = "none";  // hide while preparing
+    noDataCard.style.display = "none";
+    copyButton.style.display = "inline-block";
 
-            const SMALL_TRUCK_RATE = 73.17;
-            const BIG_TRUCK_RATE = 146.27;
-            const HOLTAGE_DAY_RATE = 190.17;
-            const WEIGHT_CHARGE_RATE = 146.34;
-            const VAT_RATE = 0.15;
+    const SMALL_TRUCK_RATE = 73.17;
+    const BIG_TRUCK_RATE = 146.27;
+    const HOLTAGE_DAY_RATE = 190.17;
+    const WEIGHT_CHARGE_RATE = 146.34;
+    const VAT_RATE = 0.15;
 
-            const totalTruck = num1 + num2;
-            const formattedSmall = roundUpTwo(num1 * SMALL_TRUCK_RATE);
-            const formattedBig = roundUpTwo(num2 * BIG_TRUCK_RATE);
-            const formattedEntryfee = roundUpTwo(formattedSmall + formattedBig);
-            const formattedHoltagefee = roundUpTwo(num3 * HOLTAGE_DAY_RATE);
-            const formattedWeightfee = roundUpTwo(totalTruck * WEIGHT_CHARGE_RATE);
-            const formattedPortcharge = roundUpTwo(formattedEntryfee + formattedHoltagefee + formattedWeightfee);
-            const formattedVat = roundUpTwo(formattedPortcharge * VAT_RATE);
-            const formattedRevenue = roundUpTwo(formattedPortcharge + formattedVat);
+    const totalTruck = num1 + num2;
+    const formattedSmall = roundUpTwo(num1 * SMALL_TRUCK_RATE);
+    const formattedBig = roundUpTwo(num2 * BIG_TRUCK_RATE);
+    const formattedEntryfee = roundUpTwo(formattedSmall + formattedBig);
+    const formattedHoltagefee = roundUpTwo(num3 * HOLTAGE_DAY_RATE);
+    const formattedWeightfee = roundUpTwo(totalTruck * WEIGHT_CHARGE_RATE);
+    const formattedPortcharge = roundUpTwo(formattedEntryfee + formattedHoltagefee + formattedWeightfee);
+    const formattedVat = roundUpTwo(formattedPortcharge * VAT_RATE);
+    const formattedRevenue = roundUpTwo(formattedPortcharge + formattedVat);
 
-            if (num3 === 0) {
-                document.getElementById("haltageRow").style.display = "none";
-            } else {
-                document.getElementById("haltageRow").style.display = "table-row";
-            }
+    if (num3 === 0) {
+        document.getElementById("haltageRow").style.display = "none";
+    } else {
+        document.getElementById("haltageRow").style.display = "table-row";
+    }
 
-            let totalTruckText;
-            if (num1 === 0 && num2 <= 1) totalTruckText = `${num2} Big Truck`;
-            else if (num1 === 0 && num2 > 1) totalTruckText = `${num2} Big Trucks`;
-            else if (num2 === 0 && num1 <= 1) totalTruckText = `${num1} Small Truck`;
-            else if (num2 === 0 && num1 > 1) totalTruckText = `${num1} Small Trucks`;
-            else totalTruckText = `${num1} Small + ${num2} Big = ${totalTruck} Trucks`;
+    // Reset all numeric cells
+    resetTableValues();
 
-            // Animate Total Trucks individually
-            animateNumber("smallTruck", num1, 1200);
-            animateNumber("bigTruck", num2, 1200);
-            animateNumber("totalTruckValue", num1 + num2, 1200);
+    // Show table
+    resultTable.style.display = "table";
 
-            // Animate numbers for Entry Fees
-            animateNumber("entrySmall", formattedSmall, 1200);
-            animateNumber("entryBig", formattedBig, 1200);
-            animateNumber("entryTotal", formattedEntryfee, 1200);
+    // Animate numbers on next animation frame
+    requestAnimationFrame(() => {
+        animateNumber("smallTruck", num1, 1200);
+        animateNumber("bigTruck", num2, 1200);
+        animateNumber("totalTruckValue", totalTruck, 1200);
 
-            // Animate other fees as usual
-            if (num3 !== 0) animateNumber("haltagefee", formattedHoltagefee, 1200, "/-");
-            animateNumber("weightfee", formattedWeightfee, 1200, "/-");
-            animateNumber("portcharge", formattedPortcharge, 1200, "/-");
-            animateNumber("vat", formattedVat, 1200, "/-");
-            animateNumber("revenue", formattedRevenue, 1200, "/-");
+        animateNumber("entrySmall", formattedSmall, 1200);
+        animateNumber("entryBig", formattedBig, 1200);
+        animateNumber("entryTotal", formattedEntryfee, 1200);
 
-            animateTableRows();
+        if (num3 !== 0) animateNumber("haltagefee", formattedHoltagefee, 1200, "/-");
+        animateNumber("weightfee", formattedWeightfee, 1200, "/-");
+        animateNumber("portcharge", formattedPortcharge, 1200, "/-");
+        animateNumber("vat", formattedVat, 1200, "/-");
+        animateNumber("revenue", formattedRevenue, 1200, "/-");
+    });
+}
 
-            copyButton.onclick = function () {
-                const statement = `Trucks: ${num1} Small + ${num2} Big = ${totalTruck}, Haltage Days = ${num3}, Total Revenue: ${formattedRevenue}/-`;
-                const tempInput = document.createElement('textarea');
-                tempInput.value = statement;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                try { document.execCommand('copy'); alert('Statement copied!'); } catch (err) { alert('Copy failed!'); }
-                finally { document.body.removeChild(tempInput); }
-            };
-        }
+
 
         function loadDataForDate(selectedDate) {
             const resultTable = document.getElementById("resultTable");
@@ -897,8 +913,9 @@
             fetch(fetchUrl)
                 .then(res => { if (!res.ok) throw new Error(res.status); return res.json(); })
                 .then(response => {
-                    loadingCard.classList.remove("show");
-                    setTimeout(() => loadingCard.style.display = "none", 500);
+                    // Hide loading immediately before showing table
+                        loadingCard.classList.remove("show");
+                        loadingCard.style.display = "none";
 
                     const dataExists = response.success && response.data && (
                         parseInt(response.data.small_truck) > 0 ||
