@@ -37,7 +37,7 @@
         padding: 10px;
         text-align: center;
         width: 90%;
-        max-width: 400px;
+        max-width: 450px;
         z-index: 9;
         margin-top: 35%;
         position: relative;
@@ -102,13 +102,13 @@
     }
 
     th {
-        width: 45%;
+        width: 35%;
         padding: 10px;
         text-align: left;
     }
 
     td {
-        width: 55%;
+        width: 65%;
         padding: 10px;
         text-align: right;
     }
@@ -604,8 +604,15 @@
         font-size: 2em;
         margin-bottom: 10px;
     }
-</style>
 
+    #resultTable td {
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+#resultTable.show td {
+    opacity: 1;
+}
+</style>
 <body>
     <script>
         // Custom message function (Placeholder for popups)
