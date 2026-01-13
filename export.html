@@ -616,11 +616,39 @@
 <body>
     <script>
         // Custom message function (Placeholder for popups)
-        function showCustomMessage(msg, type = 'error') {
-            // For a display-only report, we use console logging for messages that would otherwise appear in a toast/popup.
-            console.log(`[${type.toUpperCase()}] ${msg}`);
-        }
+        function showCustomMessage(msg, type = 'success') {
+    const alertBox = document.getElementById("alertBox");
+    alertBox.innerText = msg;
+    alertBox.style.backgroundColor = type === 'success' ? '#28a745' : '#dc3545';
+    alertBox.style.display = 'block';
+    alertBox.style.opacity = '1';
+
+    // Automatically dismiss after 1 second
+    setTimeout(() => {
+        alertBox.style.transition = "opacity 0.5s";
+        alertBox.style.opacity = '0';
+        setTimeout(() => alertBox.style.display = 'none', 500);
+    }, 1000);
+}
+
     </script>
+
+    <div id="alertBox" style="
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #28a745;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    z-index: 2000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    text-align: center;
+"></div>
+
 
 
     <div class="header">
@@ -650,6 +678,29 @@
 
                 </div>
 
+                <div id="loadingCard" style="
+                    display:none;
+                    background:#d1ecf1;
+                    color:#0c5460;
+                    border:1px solid #bee5eb;
+                    border-radius:10px;
+                    padding:20px;
+                    margin-top:15px;
+                    text-align:center;
+                    font-size:1.2em;
+                    font-weight:bold;
+                    width:100%;
+                    min-height:150px;
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    flex-direction:column;
+                ">
+                    <i class="fas fa-spinner fa-spin" style="font-size:2em;margin-bottom:10px;"></i>
+                    Loading Data…
+                </div>
+
+
                 <div id="noDataCard">
                     <i class="fas fa-exclamation-triangle"></i>
                     No Data Submitted Today
@@ -658,12 +709,22 @@
                 <table id="resultTable" style="display: none">
                     <tr>
                         <th>Total Trucks</th>
-                        <td id="totaltruck" style="text-align: center"></td>
+                        <td id="totaltruck" display: table-row;>    
+                            <span id="smallTruck">0</span> Small + 
+                            <span id="bigTruck">0</span> Big = 
+                            <span id="totalTruckValue">0</span> Trucks
+                        </td>
                     </tr>
+
                     <tr>
                         <th>Entry Fees</th>
-                        <td id="entryfee"></td>
+                        <td id="entryfee" display: table-row;>
+                            <span id="entrySmall">0</span> + 
+                            <span id="entryBig">0</span> = 
+                            <span id="entryTotal">0</span>/-
+                        </td>
                     </tr>
+
                     <tr id="haltageRow">
                         <th>Haltage Fees</th>
                         <td id="haltagefee"></td>
