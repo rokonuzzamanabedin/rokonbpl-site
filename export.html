@@ -942,6 +942,26 @@
                 return;
             }
 
+             function loadDataForDate(selectedDate) {
+            const resultTable = document.getElementById("resultTable");
+            const noDataCard = document.getElementById("noDataCard");
+            const loadingCard = document.getElementById("loadingCard");
+            const copyButton = document.getElementById("copyStatementButton");
+
+            if (!selectedDate) {
+                noDataCard.style.display = "flex";
+                resultTable.style.display = "none";
+                loadingCard.style.display = "none";
+                copyButton.style.display = "none";
+                return;
+            }
+
+            loadingCard.style.display = "flex";
+            loadingCard.classList.add("show");
+            noDataCard.style.display = "none";
+            resultTable.style.display = "none";
+            copyButton.style.display = "none";
+
           const fetchUrl = `https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
 
 
