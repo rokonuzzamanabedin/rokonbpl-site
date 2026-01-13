@@ -37,7 +37,7 @@
         padding: 10px;
         text-align: center;
         width: 90%;
-        max-width: 450px;
+        max-width: 400px;
         z-index: 9;
         margin-top: 35%;
         position: relative;
@@ -102,13 +102,13 @@
     }
 
     th {
-        width: 35%;
+        width: 45%;
         padding: 10px;
         text-align: left;
     }
 
     td {
-        width: 65%;
+        width: 55%;
         padding: 10px;
         text-align: right;
     }
@@ -604,52 +604,16 @@
         font-size: 2em;
         margin-bottom: 10px;
     }
-
-    #resultTable td {
-    opacity: 0;
-    transition: opacity 1.2s ease;
-}
-#resultTable.show td {
-    opacity: 1;
-}
 </style>
 
 <body>
     <script>
         // Custom message function (Placeholder for popups)
-        function showCustomMessage(msg, type = 'success') {
-    const alertBox = document.getElementById("alertBox");
-    alertBox.innerText = msg;
-    alertBox.style.backgroundColor = type === 'success' ? '#28a745' : '#dc3545';
-    alertBox.style.display = 'block';
-    alertBox.style.opacity = '1';
-
-    // Automatically dismiss after 1 second
-    setTimeout(() => {
-        alertBox.style.transition = "opacity 0.5s";
-        alertBox.style.opacity = '0';
-        setTimeout(() => alertBox.style.display = 'none', 500);
-    }, 1000);
-}
-
+        function showCustomMessage(msg, type = 'error') {
+            // For a display-only report, we use console logging for messages that would otherwise appear in a toast/popup.
+            console.log(`[${type.toUpperCase()}] ${msg}`);
+        }
     </script>
-
-    <div id="alertBox" style="
-    display: none;
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #28a745;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: bold;
-    z-index: 2000;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    text-align: center;
-"></div>
-
 
 
     <div class="header">
@@ -679,29 +643,6 @@
 
                 </div>
 
-                <div id="loadingCard" style="
-                    display:none;
-                    background:#d1ecf1;
-                    color:#0c5460;
-                    border:1px solid #bee5eb;
-                    border-radius:10px;
-                    padding:20px;
-                    margin-top:15px;
-                    text-align:center;
-                    font-size:1.2em;
-                    font-weight:bold;
-                    width:100%;
-                    min-height:150px;
-                    display:flex;
-                    justify-content:center;
-                    align-items:center;
-                    flex-direction:column;
-                ">
-                    <i class="fas fa-spinner fa-spin" style="font-size:2em;margin-bottom:10px;"></i>
-                    Loading Data…
-                </div>
-
-
                 <div id="noDataCard">
                     <i class="fas fa-exclamation-triangle"></i>
                     No Data Submitted Today
@@ -710,22 +651,12 @@
                 <table id="resultTable" style="display: none">
                     <tr>
                         <th>Total Trucks</th>
-                        <td id="totaltruck" display: table-row;>    
-                            <span id="smallTruck">0</span> Small + 
-                            <span id="bigTruck">0</span> Big = 
-                            <span id="totalTruckValue">0</span> Trucks
-                        </td>
+                        <td id="totaltruck" style="text-align: center"></td>
                     </tr>
-
                     <tr>
                         <th>Entry Fees</th>
-                        <td id="entryfee" display: table-row;>
-                            <span id="entrySmall">0</span> + 
-                            <span id="entryBig">0</span> = 
-                            <span id="entryTotal">0</span>/-
-                        </td>
+                        <td id="entryfee"></td>
                     </tr>
-
                     <tr id="haltageRow">
                         <th>Haltage Fees</th>
                         <td id="haltagefee"></td>
@@ -773,47 +704,42 @@
 
 
     <script>
-        function resetTableValues() {
-    const ids = [
-        "smallTruck", "bigTruck", "totalTruckValue",
-        "entrySmall", "entryBig", "entryTotal",
-        "haltagefee", "weightfee", "portcharge", "vat", "revenue"
-    ];
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.innerText = 0;
-    });
-}
-
-resultTable.classList.remove("show");
-requestAnimationFrame(() => {
-    resultTable.classList.add("show");
-});
-
-
-        // ===== Date/Time Display =====
+        // --- Utility Functions ---
         function formatDateTime() {
             const now = new Date();
+
             const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
             ];
+
             const dayName = days[now.getDay()];
             const day = String(now.getDate()).padStart(2, "0");
             const month = months[now.getMonth()];
             const year = now.getFullYear();
+
             let hours = now.getHours();
             const minutes = String(now.getMinutes()).padStart(2, "0");
             const seconds = String(now.getSeconds()).padStart(2, "0");
+
             const ampm = hours >= 12 ? "PM" : "AM";
-            hours = hours % 12 || 12;
+            hours = hours % 12 || 12; // Convert to 12-hour format
+
             return `${dayName} ${day} ${month} ${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
         }
 
+        // Display current date/time on load
         document.getElementById("dateTime").innerText = formatDateTime();
+
+        // Live update every second:
         setInterval(() => {
             document.getElementById("dateTime").innerText = formatDateTime();
         }, 1000);
+
+        // ===== Utility Function: Round Up to Two Decimal Places =====
+        function roundUpToTwoDecimalPlaces(number) {
+            return Math.round(number * 100) / 100;
+        }
 
         function toggleRotation() {
             document.getElementById("logo").classList.toggle("rotate");
@@ -822,33 +748,6 @@ requestAnimationFrame(() => {
         window.addEventListener("load", () => {
             document.getElementById("fadeDiv").classList.add("show");
         });
-
-        // ===== Animate Numbers =====
-        function animateNumber(elementId, targetValue, duration = 1000, suffix = '') {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-            const startTime = performance.now();
-            function updateNumber(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const currentValue = Math.floor(progress * targetValue);
-                element.innerText = currentValue + suffix;
-                if (progress < 1) requestAnimationFrame(updateNumber);
-                else element.innerText = targetValue + suffix;
-            }
-            requestAnimationFrame(updateNumber);
-        }
-
-        function animateTableRows() {
-            const rows = document.querySelectorAll("#resultTable tr");
-            rows.forEach((row, index) => {
-                setTimeout(() => row.classList.add("show"), index * 150);
-            });
-        }
-
-        function roundUpTwo(num) {
-            return Math.round(num * 100) / 100;
-        }
 
         // ===== NEW FUNCTION: Copy Statement to Clipboard =====
         function copyStatement(num1, num2, num3, formattedRevenue, totalTruck) {
@@ -871,106 +770,126 @@ requestAnimationFrame(() => {
             }
         }
 
+
+        // ===== REUSABLE FUNCTION: Calculate and Display Results =====
         function calculateAndDisplayResults(num1, num2, num3, selectedDate) {
-    const resultTable = document.getElementById("resultTable");
-    const noDataCard = document.getElementById("noDataCard");
-    const copyButton = document.getElementById("copyStatementButton");
+            // Get DOM elements once
+            const resultTable = document.getElementById("resultTable");
+            const noDataCard = document.getElementById("noDataCard");
+            const copyButton = document.getElementById("copyStatementButton"); // Get the button
 
-    const isNoData = num1 === 0 && num2 === 0 && num3 === 0;
+            // Check if all data is zero
+            const isNoData = num1 === 0 && num2 === 0 && num3 === 0;
 
-    if (isNoData) {
-        resultTable.style.display = "none";
-        noDataCard.style.display = "flex";
-        copyButton.style.display = "none";
-        return;
-    }
+            if (isNoData) {
+                // If all counts are 0, hide the table/button and show the card
+                resultTable.style.display = "none";
+                noDataCard.style.display = "flex"; // Use flex to center content
+                copyButton.style.display = "none";
+                console.log(`No data found for ${selectedDate}. Displaying 'No Data' card.`);
+                return; // Stop execution, no need for calculations
+            }
 
-    resultTable.style.display = "none";  // hide while preparing
-    noDataCard.style.display = "none";
-    copyButton.style.display = "inline-block";
+            // If there is data, show the table and hide the card
+            resultTable.style.display = "table";
+            noDataCard.style.display = "none";
+            copyButton.style.display = "inline-block";
 
-    const SMALL_TRUCK_RATE = 73.17;
-    const BIG_TRUCK_RATE = 146.27;
-    const HOLTAGE_DAY_RATE = 190.17;
-    const WEIGHT_CHARGE_RATE = 146.34;
-    const VAT_RATE = 0.15;
+            // --- Define Fee and Rate Constants ---
+            const SMALL_TRUCK_RATE = 76.83;
+            const BIG_TRUCK_RATE = 153.58;
+            const HOLTAGE_DAY_RATE = 199.68;
+            const WEIGHT_CHARGE_RATE = 153.66;
+            const VAT_RATE = 0.15;
+            // ------------------------------------
 
-    const totalTruck = num1 + num2;
-    const formattedSmall = roundUpTwo(num1 * SMALL_TRUCK_RATE);
-    const formattedBig = roundUpTwo(num2 * BIG_TRUCK_RATE);
-    const formattedEntryfee = roundUpTwo(formattedSmall + formattedBig);
-    const formattedHoltagefee = roundUpTwo(num3 * HOLTAGE_DAY_RATE);
-    const formattedWeightfee = roundUpTwo(totalTruck * WEIGHT_CHARGE_RATE);
-    const formattedPortcharge = roundUpTwo(formattedEntryfee + formattedHoltagefee + formattedWeightfee);
-    const formattedVat = roundUpTwo(formattedPortcharge * VAT_RATE);
-    const formattedRevenue = roundUpTwo(formattedPortcharge + formattedVat);
+            const totalTruck = num1 + num2;
 
-    if (num3 === 0) {
-        document.getElementById("haltageRow").style.display = "none";
-    } else {
-        document.getElementById("haltageRow").style.display = "table-row";
-    }
+            // Calculations using variables
+            const formattedSmall = roundUpToTwoDecimalPlaces(num1 * SMALL_TRUCK_RATE);
+            const formattedBig = roundUpToTwoDecimalPlaces(num2 * BIG_TRUCK_RATE);
 
-    // Reset all numeric cells
-    resetTableValues();
+            const formattedEntryfee = roundUpToTwoDecimalPlaces(formattedSmall + formattedBig);
+            const formattedHoltagefee = roundUpToTwoDecimalPlaces(num3 * HOLTAGE_DAY_RATE);
+            const formattedWeightfee = roundUpToTwoDecimalPlaces(totalTruck * WEIGHT_CHARGE_RATE);
 
-    // Show table
-    resultTable.style.display = "table";
+            const formattedPortcharge = roundUpToTwoDecimalPlaces(
+                formattedEntryfee + formattedHoltagefee + formattedWeightfee
+            );
 
-    // Animate numbers on next animation frame
-    requestAnimationFrame(() => {
-        animateNumber("smallTruck", num1, 1200);
-        animateNumber("bigTruck", num2, 1200);
-        animateNumber("totalTruckValue", totalTruck, 1200);
+            const formattedVat = roundUpToTwoDecimalPlaces(formattedPortcharge * VAT_RATE);
+            const formattedRevenue = roundUpToTwoDecimalPlaces(formattedPortcharge + formattedVat);
 
-        animateNumber("entrySmall", formattedSmall, 1200);
-        animateNumber("entryBig", formattedBig, 1200);
-        animateNumber("entryTotal", formattedEntryfee, 1200);
+            // --- Display Results ---
+            document.getElementById("weightfee").innerText = `${formattedWeightfee}/-`;
+            document.getElementById("portcharge").innerText = `${formattedPortcharge}/-`;
+            document.getElementById("vat").innerText = `${formattedVat}/-`;
+            document.getElementById("revenue").innerText = `${formattedRevenue}/-`;
 
-        if (num3 !== 0) animateNumber("haltagefee", formattedHoltagefee, 1200, "/-");
-        animateNumber("weightfee", formattedWeightfee, 1200, "/-");
-        animateNumber("portcharge", formattedPortcharge, 1200, "/-");
-        animateNumber("vat", formattedVat, 1200, "/-");
-        animateNumber("revenue", formattedRevenue, 1200, "/-");
-    });
+            if (num3 === 0) {
+                document.getElementById("haltageRow").style.display = "none";
+            } else {
+                document.getElementById("haltageRow").style.display = "table-row";
+                document.getElementById("haltagefee").innerText = `${formattedHoltagefee}/-`;
+            }
 
-    // Attach the new copy logic
+            // Display Total Trucks
+            let totalTruckText;
+            if (num1 === 0 && num2 <= 1) totalTruckText = `${num2} Big Truck`;
+            else if (num1 === 0 && num2 > 1) totalTruckText = `${num2} Big Trucks`;
+            else if (num2 === 0 && num1 <= 1) totalTruckText = `${num1} Small Truck`;
+            else if (num2 === 0 && num1 > 1) totalTruckText = `${num1} Small Trucks`;
+            else totalTruckText = `${num1} Small + ${num2} Big = ${totalTruck} Trucks`;
+
+            document.getElementById("totaltruck").innerText = totalTruckText;
+            document.getElementById("entryfee").innerText = `${formattedSmall}+${formattedBig}=${formattedEntryfee}/-`;
+
+            // Attach the new copy logic
             copyButton.onclick = function() {
                 copyStatement(num1, num2, num3, formattedRevenue, totalTruck);
             };
-}
+        }
 
-
-
+        // ===== Date Change/Load Logic (Refactored) =====
         function loadDataForDate(selectedDate) {
             const resultTable = document.getElementById("resultTable");
-            const noDataCard = document.getElementById("noDataCard");
-            const loadingCard = document.getElementById("loadingCard");
-            const copyButton = document.getElementById("copyStatementButton");
+            const noDataCard = document.getElementById("noDataCard"); // Get the new card
+            const copyButton = document.getElementById("copyStatementButton"); // Get the new button
+
+            const resetDisplay = (isDataFound, message) => {
+                if (isDataFound) {
+                    resultTable.style.display = "table";
+                    noDataCard.style.display = "none";
+                    copyButton.style.display = "inline-block";
+                } else {
+                    resultTable.style.display = "none";
+                    noDataCard.style.display = "flex"; // Use flex to center content
+                    copyButton.style.display = "none";
+                }
+                if (message) showCustomMessage(message, isDataFound ? 'info' : 'error');
+            };
 
             if (!selectedDate) {
-                noDataCard.style.display = "flex";
-                resultTable.style.display = "none";
-                loadingCard.style.display = "none";
-                copyButton.style.display = "none";
+                resetDisplay(false, "No date selected.");
                 return;
             }
 
-            loadingCard.style.display = "flex";
-            loadingCard.classList.add("show");
-            noDataCard.style.display = "none";
-            resultTable.style.display = "none";
-            copyButton.style.display = "none";
+            const fetchUrl = `http://rokonbpl.atwebpages.com/fetch_export_data.php?date=${selectedDate}`;
 
-            const fetchUrl = `https://curly-pine-d92f.rokonuzzamanabedin.workers.dev/?date=${selectedDate}`;
+           console.log("Attempting to fetch data from URL:", fetchUrl);
+            showCustomMessage("Fetching data for date: " + selectedDate, 'info');
 
+            // --- The Fetch Request ---
             fetch(fetchUrl)
-                .then(res => { if (!res.ok) throw new Error(res.status); return res.json(); })
+                .then(res => {
+                    if (!res.ok) {
+                        // Treat non-200 responses as no data/error
+                        throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
+                    }
+                    return res.json();
+                })
                 .then(response => {
-                    // Hide loading immediately before showing table
-                        loadingCard.classList.remove("show");
-                        loadingCard.style.display = "none";
-
+                    // Check for success and actual data counts
                     const dataExists = response.success && response.data && (
                         parseInt(response.data.small_truck) > 0 ||
                         parseInt(response.data.big_truck) > 0 ||
@@ -978,40 +897,49 @@ requestAnimationFrame(() => {
                     );
 
                     if (dataExists) {
-                        const d = response.data;
+                        const data = response.data;
+
+                        // 1. Get numbers directly from data
+                        const num1 = parseInt(data.small_truck) || 0;
+                        const num2 = parseInt(data.big_truck) || 0;
+                        const num3 = parseInt(data.holtage_days) || 0;
+
+                        // Date for display/logging purposes
+                        const finalDateTime = `${selectedDate} 00:00:00`;
+
                         calculateAndDisplayResults(
-                            parseInt(d.small_truck) || 0,
-                            parseInt(d.big_truck) || 0,
-                            parseInt(d.holtage_days) || 0,
-                            selectedDate + " 00:00:00"
+                            num1,
+                            num2,
+                            num3,
+                            finalDateTime
                         );
+                        resetDisplay(true, "Data successfully loaded."); // Show table
+                        console.log("Data loaded for date:", selectedDate);
                     } else {
-                        noDataCard.style.display = "flex";
-                        noDataCard.classList.add("show");
-                        resultTable.style.display = "none";
-                        copyButton.style.display = "none";
+                        // No entry found in DB or data is all zero/missing fields
+                        resetDisplay(false, `No transaction data found for ${selectedDate}.`); // Show no data card
                     }
                 })
                 .catch(err => {
-                    console.error(err);
-                    loadingCard.classList.remove("show");
-                    setTimeout(() => loadingCard.style.display = "none", 500);
-                    noDataCard.style.display = "flex";
-                    noDataCard.classList.add("show");
-                    resultTable.style.display = "none";
-                    copyButton.style.display = "none";
+                    console.error("Error fetching data:", err);
+                    const errorMessage = (err && err.message) ? err.message : String(err);
+                    resetDisplay(false, `FETCH FAILED. Error: ${errorMessage}.`); // Show no data card on error
                 });
         }
 
+        // ===== Auto-select Today's Date and Load Data =====
         function setTodayAndLoadData() {
             const today = new Date();
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, "0");
             const day = String(today.getDate()).padStart(2, "0");
             const todayDateString = `${year}-${month}-${day}`;
+
+            // Manually trigger the data fetching and calculation logic
             loadDataForDate(todayDateString);
         }
 
+        // Call this function when the window finishes loading
         window.addEventListener("load", setTodayAndLoadData);
     </script>
 </body>
